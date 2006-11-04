@@ -3,7 +3,8 @@ using System;
 namespace PeerMessenger
 {
 	/// <summary>
-	/// Summary description for PacketCounter.
+	/// The PacketCounter is a singleton responsible for generating packet
+	/// numbers that the IP Messenger protocol uses.
 	/// </summary>
 	public sealed class PacketCounter
 	{

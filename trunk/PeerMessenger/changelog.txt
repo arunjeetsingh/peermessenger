@@ -1,0 +1,11 @@
+1.0.4.0
+=======
+1. Tcp send/recieve for PeerMessenger now uses the NoDelay flag. Should make PeerMessenger protocol detection snappier (in theory).
+2. Better exception handling in the UI forms.
+3. The main window isn't owner of conversations any longer. Hopefully this will fix the issue with conversations windows failing to render after restoring from system tray. Side effect: Minimizing main window has no affect on conversation windows now.
+4. Implemented the new search feature to search through contacts.
+
+1.0.5.0
+=======
+1. Todo: Show the user an error message and quit if the required ports aren't available at startup. Right now, this condition leads to a dead application.
+2. Todo: Implement window flashing to notify user of new messages.

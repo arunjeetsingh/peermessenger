@@ -226,11 +226,11 @@ namespace PeerMessenger
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
-//		[STAThread]
-//		static void Main() 
-//		{
-//			Application.Run(new MainForm());
-//		}
+		[STAThread]
+		static void Main() 
+		{
+			Application.Run(new MainForm());
+		}
 
 		#region Events
 		private void MainForm_Activated(object sender, System.EventArgs e)
@@ -341,6 +341,8 @@ namespace PeerMessenger
 			catch(Exception ex)
 			{
 				logger.Error(ex.Message, ex);
+				MessageBox.Show(this, "Could not start Peer Messenger due to the following reason: " + ex.Message + ". Please ensure you do not have IP Messenger running.", "Peer Messenger - Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+				throw ex;
 			}
 		}
 
@@ -497,6 +499,32 @@ namespace PeerMessenger
 				//Broadcast presence over PeerMessenger network. 
 				//The IPMsg listener does its own broadcasting.
 				udpManager.BroadcastPresence();
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void txtSearch_TextChanged(object sender, System.EventArgs e)
+		{
+			try
+			{
+				tmrSearch.Stop();
+				tmrSearch.Start();
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void tmrSearch_Tick(object sender, System.EventArgs e)
+		{
+			try
+			{
+				tmrSearch.Stop();
+				btnSearch_Click(null, null);
 			}
 			catch(Exception ex)
 			{
@@ -662,11 +690,13 @@ namespace PeerMessenger
 			listener = new MessageListener(3089, this);
 			listenerThread = new Thread(new ThreadStart(listener.Listen));
 			listenerThread.Start();
-			udpManager = new UdpBroadcastManager(3089, this, self);			
-			udpManagerThread = new Thread(new ThreadStart(udpManager.Listen));
-			udpManagerThread.Start();
+
+			udpManager = new UdpBroadcastManager(3089, this, self);
 			udpManagerThreadIp = new Thread(new ThreadStart(udpManager.ListenIP));
 			udpManagerThreadIp.Start();
+
+			udpManagerThread = new Thread(new ThreadStart(udpManager.Listen));
+			udpManagerThread.Start();
 		}
 
 		private void _Reconnect()
@@ -674,33 +704,7 @@ namespace PeerMessenger
 			_StopListening();
 			_StartListening();
 		}
-		#endregion								
-
-		private void txtSearch_TextChanged(object sender, System.EventArgs e)
-		{
-			try
-			{
-				tmrSearch.Stop();
-				tmrSearch.Start();
-			}
-			catch(Exception ex)
-			{
-				logger.Error(ex.Message, ex);
-			}
-		}
-
-		private void tmrSearch_Tick(object sender, System.EventArgs e)
-		{
-			try
-			{
-				tmrSearch.Stop();
-				btnSearch_Click(null, null);
-			}
-			catch(Exception ex)
-			{
-				logger.Error(ex.Message, ex);
-			}
-		}
+		#endregion										
 
 	}
 }

@@ -7,5 +7,5 @@
 
 1.0.5.0
 =======
-1. Todo: Show the user an error message and quit if the required ports aren't available at startup. Right now, this condition leads to a dead application.
-2. Todo: Implement window flashing to notify user of new messages.
+1. Show the user an error message and quit if the required ports aren't available at startup. Right now, this condition leads to a dead application.
+2. Implement window flashing to notify user of new messages.

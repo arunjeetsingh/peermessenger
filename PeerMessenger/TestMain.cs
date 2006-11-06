@@ -160,11 +160,11 @@ namespace PeerMessenger
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
-		[STAThread]
-		static void Main() 
-		{
-			Application.Run(new TestMain());
-		}
+//		[STAThread]
+//		static void Main() 
+//		{
+//			Application.Run(new TestMain());
+//		}
 
 		#region Events
 		private void MainForm_Load(object sender, System.EventArgs e)

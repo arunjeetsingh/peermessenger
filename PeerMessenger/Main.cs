@@ -15,7 +15,7 @@ using log4net;
 namespace PeerMessenger
 {
 	/// <summary>
-	/// Summary description for Form1.
+	/// Main form
 	/// </summary>
 	public class MainForm : System.Windows.Forms.Form, ISubscriber
 	{

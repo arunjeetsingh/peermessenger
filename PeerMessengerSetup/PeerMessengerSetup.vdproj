@@ -15,7 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_66B194013D9B38B4A72D11824761B4EA"
+        "MsmKey" = "8:_56CB0F0E64A64F41803966EB5FF9A6DA"
+        "OwnerKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_56CB0F0E64A64F41803966EB5FF9A6DA"
         "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,13 +33,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6D654EF85B0346D4A1C7331C352AA612"
-        "OwnerKey" = "8:_66B194013D9B38B4A72D11824761B4EA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6D654EF85B0346D4A1C7331C352AA612"
+        "MsmKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
         "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -102,14 +102,14 @@
         }
         "File"
         {
-            "{FB480208-1853-44D0-9ABD-A3B734C3FAAA}:_66B194013D9B38B4A72D11824761B4EA"
+            "{FB480208-1853-44D0-9ABD-A3B734C3FAAA}:_87776D42BA807DBB9D9E41C7FE8A0ADB"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:log4net, Version=1.2.0.30507, Culture=neutral, PublicKeyToken=0e20bce7a5cc04d1"
                 "ScatterAssemblies"
                 {
-                    "_66B194013D9B38B4A72D11824761B4EA"
+                    "_87776D42BA807DBB9D9E41C7FE8A0ADB"
                     {
                     "Name" = "8:log4net.dll"
                     "Attributes" = "3:512"
@@ -188,13 +188,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Peer Messenger"
-        "ProductCode" = "8:{4E2175EB-D726-42CB-868A-25DFE6D63C92}"
-        "PackageCode" = "8:{D14467B0-E350-420F-ACB1-8F600C465C29}"
+        "ProductCode" = "8:{A4C5218A-5347-4297-BBD4-AD7D1E195C7C}"
+        "PackageCode" = "8:{45469398-93E3-4CFD-B244-6F430E36E126}"
         "UpgradeCode" = "8:{A1C12FFF-C7EF-4875-B13B-B0601B544733}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.0.4"
+        "ProductVersion" = "8:1.0.5"
         "Manufacturer" = "8:Maximum Impact"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -700,7 +700,7 @@
         }
         "MergeModule"
         {
-            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_6D654EF85B0346D4A1C7331C352AA612"
+            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_56CB0F0E64A64F41803966EB5FF9A6DA"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -719,7 +719,7 @@
         {
             "{8062640A-2EEE-46E9-AB67-688E9A886E9F}:_6900489A6F6840AD96C15E00AA31B8F5"
             {
-            "SourcePath" = "8:..\\obj\\Debug\\PeerMessenger.exe"
+            "SourcePath" = "8:..\\PeerMessenger\\obj\\Debug\\PeerMessenger.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0635DC41B3DC4364B30A4809323D6196"

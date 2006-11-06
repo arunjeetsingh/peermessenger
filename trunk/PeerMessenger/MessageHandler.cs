@@ -62,10 +62,10 @@ namespace PeerMessenger
 				{
 					logger.Debug(msg.Sender + " sent " + msg.Message);
 					ivListener.Subscriber.GetMessage(msg.Sender, msg.Message);
-				}
-
-				ivIncoming.Close();
+				}				
 			}
+
+			ivIncoming.Close();
 		}
 	}
 }

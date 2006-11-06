@@ -15,7 +15,6 @@ namespace PeerMessenger
 	public class Conversation : System.Windows.Forms.Form, ISubscriber
 	{
 		private System.Windows.Forms.RichTextBox rtbSend;
-		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Button btnSend;
 
 		private Host h, ivSelf;
@@ -28,7 +27,6 @@ namespace PeerMessenger
 		private System.Windows.Forms.RichTextBox rtbConversation;
 		
 		private ILog logger = LogManager.GetLogger(typeof(Conversation));
-		private System.Windows.Forms.Timer tmrBlink;
 		private ILog messageLogger = LogManager.GetLogger("MessageLogger");
 
 		public Conversation(ISubscriber mainWindow, Host host, Host self, UdpBroadcastManager udpManager) : this()
@@ -56,13 +54,6 @@ namespace PeerMessenger
 		/// </summary>
 		protected override void Dispose( bool disposing )
 		{
-			if( disposing )
-			{
-				if(components != null)
-				{
-					components.Dispose();
-				}
-			}
 			base.Dispose( disposing );
 		}
 
@@ -73,11 +64,9 @@ namespace PeerMessenger
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
 			this.rtbSend = new System.Windows.Forms.RichTextBox();
 			this.btnSend = new System.Windows.Forms.Button();
 			this.rtbConversation = new System.Windows.Forms.RichTextBox();
-			this.tmrBlink = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// rtbSend
@@ -121,11 +110,6 @@ namespace PeerMessenger
 			this.rtbConversation.TabIndex = 0;
 			this.rtbConversation.Text = "";
 			// 
-			// tmrBlink
-			// 
-			this.tmrBlink.Interval = 1000;
-			this.tmrBlink.Tick += new System.EventHandler(this.tmrBlink_Tick);
-			// 
 			// Conversation
 			// 
 			this.AcceptButton = this.btnSend;
@@ -135,10 +119,7 @@ namespace PeerMessenger
 			this.Controls.Add(this.btnSend);
 			this.Controls.Add(this.rtbSend);
 			this.Controls.Add(this.rtbConversation);
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
 			this.Name = "Conversation";
-			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "Conversation";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.Conversation_Closing);
 			this.Load += new System.EventHandler(this.Conversation_Load);
@@ -254,10 +235,7 @@ namespace PeerMessenger
 					rtbConversation.ScrollToCaret();
 					rtbSend.Focus();
 
-					if(this.Focused == false)
-					{
-						tmrBlink.Start();
-					}
+					FlashWindowHelper.FlashWindowEx(this.Handle);
 				}
 			}
 			catch(Exception ex)
@@ -381,17 +359,12 @@ namespace PeerMessenger
 		{
 			try
 			{
-				tmrBlink.Stop();
 				rtbSend.Focus();
 			}
 			catch(Exception ex)
 			{
 				logger.Error(ex.Message, ex);
 			}
-		}
-
-		private void tmrBlink_Tick(object sender, System.EventArgs e)
-		{
 		}
 	}
 }

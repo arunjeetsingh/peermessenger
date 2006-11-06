@@ -41,6 +41,7 @@ namespace PeerMessenger
 		private System.Windows.Forms.ImageList ilIcons;
 		private System.Windows.Forms.Button btnSearch;
 		private System.Windows.Forms.Timer tmrSearch;
+		object syncLock = new object();
 
 		private ILog logger = LogManager.GetLogger(typeof(MainForm));		
 
@@ -269,7 +270,7 @@ namespace PeerMessenger
 				{
 					foreach(Host h in hosts.Values)
 					{
-						if(h.PreferredName.ToLower().StartsWith(txtSearch.Text))
+						if(h.PreferredName.ToLower().StartsWith(txtSearch.Text.ToLower()))
 						{
 							items.Add(h);
 						}
@@ -342,7 +343,7 @@ namespace PeerMessenger
 			{
 				logger.Error(ex.Message, ex);
 				MessageBox.Show(this, "Could not start Peer Messenger due to the following reason: " + ex.Message + ". Please ensure you do not have IP Messenger running.", "Peer Messenger - Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
-				throw ex;
+				Application.Exit();
 			}
 		}
 
@@ -550,17 +551,20 @@ namespace PeerMessenger
 			{
 				if(this.InvokeRequired == false)
 				{
-					Conversation c = null;
-					Host host = hosts[sender] as Host;
-					if(!Conversations.Contains(sender))
+					lock(syncLock)
 					{
-						c = new Conversation(this, host, self, udpManager);
-						Conversations.Add(host.Sender, c);					
-						c.Show();
-					}
+						Conversation c = null;
+						Host host = hosts[sender] as Host;
+						if(!Conversations.Contains(sender))
+						{
+							c = new Conversation(this, host, self, udpManager);
+							Conversations.Add(host.Sender, c);					
+							c.Show();
+						}
 				
-					c = Conversations[host.Sender] as Conversation;
-					c.GetMessage(sender, message);
+						c = Conversations[host.Sender] as Conversation;
+						c.GetMessage(sender, message);
+					}
 				}
 				else
 				{
@@ -579,10 +583,20 @@ namespace PeerMessenger
 			{
 				if(this.InvokeRequired == false)
 				{
-					if(!hosts.Contains(h.Sender))
+					lock(syncLock)
 					{
-						hosts.Add(h.Sender, h);
-						lstHosts.Items.Add(h);
+						if(!hosts.Contains(h.Sender))
+						{						
+							hosts.Add(h.Sender, h);
+							lstHosts.Items.Add(h);
+						}
+						else
+						{
+							hosts[h.Sender] = h;
+							lstHosts.Items.Remove(h);
+							lstHosts.Items.Add(h);
+						}
+
 						if(Conversations.Contains(h.Sender))
 						{
 							(Conversations[h.Sender] as Conversation).GetClient(h);
@@ -606,15 +620,18 @@ namespace PeerMessenger
 			{
 				if(this.InvokeRequired == false)
 				{
-					if(hosts.Contains(sender))
+					lock(syncLock)
 					{
-						Host toRemove = hosts[sender] as Host;
-						lstHosts.Items.Remove(toRemove);
-						hosts.Remove(sender);
+						if(hosts.Contains(sender))
+						{
+							Host toRemove = hosts[sender] as Host;
+							lstHosts.Items.Remove(toRemove);
+							hosts.Remove(sender);
 
-						if(Conversations.Contains(sender))
-						{			
-							(Conversations[sender] as Conversation).DeleteClient(sender);
+							if(Conversations.Contains(sender))
+							{			
+								(Conversations[sender] as Conversation).DeleteClient(sender);
+							}
 						}
 					}
 				}

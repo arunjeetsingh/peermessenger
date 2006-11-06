@@ -147,13 +147,18 @@ namespace PeerMessenger
 						{
 							Subscriber.GetClient(new Host(m.Sender, m.AdditionalSection, m.SenderHost, true));
 						}
-						else if((m.Command & Command.IPMSG_BR_ENTRY) == Command.IPMSG_BR_ENTRY)
+						else if((m.Command & Command.IPMSG_BR_ENTRY) == Command.IPMSG_BR_ENTRY && (m.Command & Command.IPMSG_FILEATTACHOPT) == Command.IPMSG_FILEATTACHOPT)
 						{
+							Subscriber.GetClient(new Host(m.Sender, m.AdditionalSection, m.SenderHost, true));
 							AnswerEntry(m);
 						}
-						else if((m.Command & Command.IPMSG_BR_EXIT) == Command.IPMSG_BR_EXIT)
+						else if((m.Command & Command.IPMSG_BR_EXIT) == Command.IPMSG_BR_EXIT && (m.Command & Command.IPMSG_FILEATTACHOPT) == Command.IPMSG_FILEATTACHOPT)
 						{
 							Subscriber.DeleteClient(m.Sender);
+						}
+						else if(m.Command == Command.IPMSG_RECVMSG)
+						{
+							//Message acknowledged
 						}
 						else if((m.Command & Command.IPMSG_SENDMSG) == Command.IPMSG_SENDMSG)
 						{
@@ -193,24 +198,35 @@ namespace PeerMessenger
 
 		private bool _IsDuplicateMessage(IpMessage m)
 		{
+			bool retVal = false;
+			ArrayList packetQueue = null;
 			if(packetTracker.Contains(m.Sender))
 			{
-				ulong lastPacket = (ulong)packetTracker[m.Sender];
-				if(lastPacket >= m.Packet)
+				packetQueue = packetTracker[m.Sender] as ArrayList;
+				if(packetQueue.Contains(m.Packet))
 				{
-					return true;
+					retVal = true;
 				}
 				else
 				{
-					packetTracker[m.Sender] = m.Packet;
-					return false;
+					packetQueue.Add(m.Packet);
+					retVal = false;
 				}
 			}
 			else
 			{
-				packetTracker.Add(m.Sender, m.Packet);
-				return false;
+				packetTracker.Add(m.Sender, new ArrayList());
+				packetQueue = packetTracker[m.Sender] as ArrayList;
+				packetQueue.Add(m.Packet);
+				retVal = false;
 			}
+
+			if(packetQueue.Count > 50)
+			{
+				packetQueue.RemoveRange(0, packetQueue.Count - 50);
+			}
+
+			return retVal;
 		}
 
 		public void SendIP(string host, string message)

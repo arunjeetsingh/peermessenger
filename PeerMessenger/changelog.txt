@@ -21,3 +21,10 @@
 1.0.7.0
 =======
 1. New icon.
+2. Added Refresh functionality.
+3. Added a status bar and cleaned up the main window.
+4. Seperated out IPMsg presence code from the listener.
+5. People are saying that Peer Messenger to Peer Messenger delivery does not work as expected. Needs looking into. Perhaps I need to switch to using UDP for the PeerMessenger protocol too.
+6. There was a problem sending URLs (eg: http://www.yahoo.com) because the IPMsg protocol uses ':' as a delimeter. Now fixed.
+7. Introduced a new flag in Options that lets a user turn off Peer Messenger protocol support. Not recommended! Only do this if you have trouble communicating with other Peer Messenger clients.
+8. Cleaned up configuration functionality. New class called ConfigurationManager introduced.

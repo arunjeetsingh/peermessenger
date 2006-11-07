@@ -212,7 +212,7 @@
                 />
                 <File
                     RelPath = "Peer2.ico"
-                    BuildAction = "None"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "PeerMessage.cs"

@@ -126,6 +126,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConfigurationManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Conversation.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -221,6 +226,10 @@
                 />
                 <File
                     RelPath = "PeerMessenger.snk"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "PROT-ENG.TXT"
                     BuildAction = "None"
                 />
                 <File

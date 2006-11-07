@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4658533C5CC84D6E9E13A7E360C2F25B"
         "OwnerKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
         "MsmSig" = "8:_UNDEFINED"
@@ -102,6 +108,26 @@
         }
         "File"
         {
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_2BF25E2FB1C443BEA3C6DFD48493439D"
+            {
+            "SourcePath" = "8:..\\PeerMessenger\\Peer2.ico"
+            "TargetName" = "8:Peer2.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_0635DC41B3DC4364B30A4809323D6196"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{FB480208-1853-44D0-9ABD-A3B734C3FAAA}:_87776D42BA807DBB9D9E41C7FE8A0ADB"
             {
             "AssemblyRegister" = "3:1"
@@ -189,7 +215,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Peer Messenger"
         "ProductCode" = "8:{76CF24F7-235C-4A81-8908-F203C3B26FAD}"
-        "PackageCode" = "8:{EFB29988-5C3B-4132-A144-AA9AF5619880}"
+        "PackageCode" = "8:{6EC7A126-8655-4850-B57A-AAAA6D59EC4B}"
         "UpgradeCode" = "8:{A1C12FFF-C7EF-4875-B13B-B0601B544733}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -197,14 +223,14 @@
         "ProductVersion" = "8:1.0.7"
         "Manufacturer" = "8:Maximum Impact"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:"
+        "ARPHELPLINK" = "8:http://arunjeetsingh.livejournal.com"
         "Title" = "8:Peer Messenger"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Maximum Impact"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:"
-        "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:"
+        "ARPCOMMENTS" = "8:Peer Messenger"
+        "ARPURLINFOABOUT" = "8:http://arunjeetsingh.livejournal.com"
+        "ARPPRODUCTICON" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -303,18 +329,32 @@
         }
         "Shortcut"
         {
-            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_D3984E2EC5354025ACF67A0D8701A314"
+            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_143FF4A63D734BF8B6E51EE7CFCEBD3D"
             {
             "Name" = "8:Peer Messenger"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:Peer Messenger"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
             "Folder" = "8:_AF699D23EF1A41628989CC26635CCB3F"
             "WorkingFolder" = "8:_0635DC41B3DC4364B30A4809323D6196"
-            "Icon" = "8:"
+            "Icon" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
+            "Feature" = "8:"
+            }
+            "{478F747B-8505-45D1-9AAE-8C3B645C26E3}:_C8384758863B4BD7A741D64E4FBB46BD"
+            {
+            "Name" = "8:Peer Messenger"
+            "Arguments" = "8:"
+            "Description" = "8:Peer Messenger"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
+            "Folder" = "8:_6E48AC65875D42E0886BD9DD2B137AD1"
+            "WorkingFolder" = "8:_0635DC41B3DC4364B30A4809323D6196"
+            "Icon" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
             "Feature" = "8:"
             }
         }

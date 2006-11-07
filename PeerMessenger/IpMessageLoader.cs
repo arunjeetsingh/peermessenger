@@ -14,7 +14,7 @@ namespace PeerMessenger
 		public static IpMessage Load(string msg)
 		{
 			IpMessage retVal = null;
-			string[] messageComponents = msg.Split(':');
+			string[] messageComponents = msg.Split(new char[]{':'}, 6);
 			if(messageComponents != null && messageComponents.Length > 0)
 			{
 				retVal = new IpMessage();

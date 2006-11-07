@@ -125,11 +125,6 @@ namespace PeerMessenger
 		{
 			try
 			{
-				byte[] msg = MessageFormatter.GetIPMsgNoOp(ivSelf);
-				listenerIp.Send(msg, msg.Length, new IPEndPoint(IPAddress.Parse("255.255.255.255"), 2425));
-				msg = MessageFormatter.GetIPMsgPresenceMessage(ivSelf);
-				listenerIp.Send(msg, msg.Length, new IPEndPoint(IPAddress.Parse("255.255.255.255"), 2425));
-
 				while(ivStop == false)
 				{
 					// Wait for broadcast... will block until data recv'd, 
@@ -239,6 +234,14 @@ namespace PeerMessenger
 		{
 			byte[] broadCast = MessageFormatter.GetIPAbsenceMessage(ivSelf);
 			listenerIp.Send(broadCast, broadCast.Length, new IPEndPoint(IPAddress.Parse("255.255.255.255"), 2425));
+		}
+
+		public void BroadcastIPPresence()
+		{
+			byte[] msg = MessageFormatter.GetIPMsgNoOp(ivSelf);
+			listenerIp.Send(msg, msg.Length, new IPEndPoint(IPAddress.Parse("255.255.255.255"), 2425));
+			msg = MessageFormatter.GetIPMsgPresenceMessage(ivSelf);
+			listenerIp.Send(msg, msg.Length, new IPEndPoint(IPAddress.Parse("255.255.255.255"), 2425));
 		}
 
 		public void BroadcastPresence()

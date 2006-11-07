@@ -213,6 +213,7 @@ namespace PeerMessenger
 			this.Controls.Add(this.btnChat);
 			this.Controls.Add(this.btnExit);
 			this.Controls.Add(this.lstHosts);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.Text = "Peer Messenger";

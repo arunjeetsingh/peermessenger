@@ -17,3 +17,7 @@
 3. Don't rethrow the exception when application fails to initialize. This would make a CLR debugger box appear. Doesn't happen anymore.
 4. Huge issue in the IP Messenger protocol implementation! If a peer came in after you log in your client would acknowledge them but NOT set them up as a host! Hopefully fixed now.
 5. IP listener did not filter out message acknowledgments. With the changes in 4, these would be mistaken as actual messages. Fixed now.
+
+1.0.7.0
+=======
+1. New icon.

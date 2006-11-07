@@ -64,6 +64,7 @@ namespace PeerMessenger
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Conversation));
 			this.rtbSend = new System.Windows.Forms.RichTextBox();
 			this.btnSend = new System.Windows.Forms.Button();
 			this.rtbConversation = new System.Windows.Forms.RichTextBox();
@@ -119,6 +120,7 @@ namespace PeerMessenger
 			this.Controls.Add(this.btnSend);
 			this.Controls.Add(this.rtbSend);
 			this.Controls.Add(this.rtbConversation);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Conversation";
 			this.Text = "Conversation";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.Conversation_Closing);

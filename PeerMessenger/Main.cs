@@ -31,7 +31,6 @@ namespace PeerMessenger
 		private Hashtable hosts = new Hashtable();
 		private Hashtable ivConversations = new Hashtable();
 		private Host self;
-		private string logFile;
 		private System.Windows.Forms.ContextMenu cmnuMain;
 		private System.Windows.Forms.MenuItem menuItem1;
 		private System.Windows.Forms.NotifyIcon niPeerMessenger;
@@ -42,6 +41,8 @@ namespace PeerMessenger
 		private System.Windows.Forms.Button btnSearch;
 		private System.Windows.Forms.Timer tmrSearch;
 		object syncLock = new object();
+		private System.Windows.Forms.Button btnRefresh;
+		private System.Windows.Forms.StatusBar sbMain;
 
 		private ILog logger = LogManager.GetLogger(typeof(MainForm));		
 
@@ -93,6 +94,8 @@ namespace PeerMessenger
 			this.btnSearch = new System.Windows.Forms.Button();
 			this.ilIcons = new System.Windows.Forms.ImageList(this.components);
 			this.tmrSearch = new System.Windows.Forms.Timer(this.components);
+			this.btnRefresh = new System.Windows.Forms.Button();
+			this.sbMain = new System.Windows.Forms.StatusBar();
 			this.SuspendLayout();
 			// 
 			// lstHosts
@@ -103,7 +106,7 @@ namespace PeerMessenger
 			this.lstHosts.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.lstHosts.Location = new System.Drawing.Point(8, 32);
 			this.lstHosts.Name = "lstHosts";
-			this.lstHosts.Size = new System.Drawing.Size(216, 314);
+			this.lstHosts.Size = new System.Drawing.Size(216, 301);
 			this.lstHosts.Sorted = true;
 			this.lstHosts.TabIndex = 0;
 			this.lstHosts.DoubleClick += new System.EventHandler(this.lstHosts_DoubleClick);
@@ -115,8 +118,9 @@ namespace PeerMessenger
 			this.btnExit.BackColor = System.Drawing.SystemColors.Control;
 			this.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btnExit.Location = new System.Drawing.Point(152, 368);
+			this.btnExit.Location = new System.Drawing.Point(168, 344);
 			this.btnExit.Name = "btnExit";
+			this.btnExit.Size = new System.Drawing.Size(56, 23);
 			this.btnExit.TabIndex = 5;
 			this.btnExit.Text = "E&xit";
 			this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
@@ -128,8 +132,9 @@ namespace PeerMessenger
 			this.btnChat.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnChat.Enabled = false;
 			this.btnChat.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.btnChat.Location = new System.Drawing.Point(64, 368);
+			this.btnChat.Location = new System.Drawing.Point(104, 344);
 			this.btnChat.Name = "btnChat";
+			this.btnChat.Size = new System.Drawing.Size(56, 23);
 			this.btnChat.TabIndex = 4;
 			this.btnChat.Text = "&Chat";
 			this.btnChat.Click += new System.EventHandler(this.btnChat_Click);
@@ -202,12 +207,33 @@ namespace PeerMessenger
 			this.tmrSearch.Interval = 1000;
 			this.tmrSearch.Tick += new System.EventHandler(this.tmrSearch_Tick);
 			// 
+			// btnRefresh
+			// 
+			this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnRefresh.BackColor = System.Drawing.SystemColors.Control;
+			this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.btnRefresh.Location = new System.Drawing.Point(40, 344);
+			this.btnRefresh.Name = "btnRefresh";
+			this.btnRefresh.Size = new System.Drawing.Size(56, 23);
+			this.btnRefresh.TabIndex = 8;
+			this.btnRefresh.Text = "&Refresh";
+			this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+			// 
+			// sbMain
+			// 
+			this.sbMain.Location = new System.Drawing.Point(0, 381);
+			this.sbMain.Name = "sbMain";
+			this.sbMain.Size = new System.Drawing.Size(232, 16);
+			this.sbMain.TabIndex = 9;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.BackColor = System.Drawing.Color.White;
 			this.ClientSize = new System.Drawing.Size(232, 397);
 			this.ContextMenu = this.cmnuMain;
+			this.Controls.Add(this.sbMain);
+			this.Controls.Add(this.btnRefresh);
 			this.Controls.Add(this.btnSearch);
 			this.Controls.Add(this.txtSearch);
 			this.Controls.Add(this.btnChat);
@@ -314,25 +340,19 @@ namespace PeerMessenger
 
 				//Get the username out of the application configuration
 				string userName = Environment.UserName;
-				if(ConfigurationSettings.AppSettings["UserName"] != null)
+				if(ConfigurationManager.UserName != null)
 				{
-					userName = ConfigurationSettings.AppSettings["UserName"];
+					userName = ConfigurationManager.UserName;
 				}
 				this.Text += " - " + userName;
-
-				//Get the log file name
-				XmlDocument doc = new XmlDocument();
-				doc.Load("PeerMessenger.exe.config");
-				XmlElement messageAppender = doc.SelectSingleNode("//configuration/log4net/appender[@name='MessageAppender']/param[@name='File']") as XmlElement;
-				if(messageAppender != null)
-				{
-					logFile = messageAppender.Attributes["value"].Value;
-				}
 
 				//Set up host settings for self			
 				self = new Host(Environment.UserName, userName, Environment.MachineName);
 
 				_StartListening();
+
+				//Broadcast client presence over IPMsg
+				udpManager.BroadcastIPPresence();
 
 				//Add yourself to the host list
 				hosts.Add(self.Sender, self);
@@ -377,6 +397,7 @@ namespace PeerMessenger
 			try
 			{
 				e.Cancel = true;
+				niPeerMessenger.Text = self.PreferredName;
 				niPeerMessenger.Visible = true;
 				this.ShowInTaskbar = false;
 				this.Hide();
@@ -438,48 +459,24 @@ namespace PeerMessenger
 			{
 				OptionsDialog o = new OptionsDialog();
 				o.UserName = self.PreferredName;
-				o.LogFile = logFile.Replace("\\\\", "\\");
+				string logFile = ConfigurationManager.LogFile.Replace("\\\\", "\\");
+				o.LogFile = logFile;
+				o.DisablePeerMessengerSupport = ConfigurationManager.DisablePeerMessengerSupport;
 				if(o.ShowDialog() == DialogResult.OK)
 				{
 					if(o.UserName != self.PreferredName)
 					{
-						//self = new Host(Environment.UserName, o.UserName, Environment.MachineName);
-						XmlDocument doc = new XmlDocument();
-						doc.Load("PeerMessenger.exe.config");
-
-						XmlNode n = doc.SelectSingleNode("//configuration/appSettings/add[@key='UserName']");
-						if(n == null)
-						{
-							XmlElement appSettings = doc.SelectSingleNode("//configuration/appSettings") as XmlElement;
-							XmlElement add = doc.CreateElement("add");						
-							XmlAttribute key = doc.CreateAttribute("key");
-							key.Value = "UserName";
-
-							XmlAttribute val = doc.CreateAttribute("value");
-
-							add.Attributes.Append(key);
-							add.Attributes.Append(val);
-							appSettings.AppendChild(add);
-
-							n = add as XmlNode;
-						}
-
-						n.Attributes["value"].Value = o.UserName;
-						doc.Save("PeerMessenger.exe.config");				
-
-						//_Reconnect();
+						ConfigurationManager.SetUserName(o.UserName);
 					}
 
 					if(o.LogFile != logFile)
 					{
-						XmlDocument doc = new XmlDocument();
-						doc.Load("PeerMessenger.exe.config");
-						XmlElement messageAppender = doc.SelectSingleNode("//configuration/log4net/appender[@name='MessageAppender']/param[@name='File']") as XmlElement;
-						if(messageAppender != null)
-						{
-							messageAppender.Attributes["value"].Value = o.LogFile.Replace("\\", "\\\\");
-						}
-						doc.Save("PeerMessenger.exe.config");
+						ConfigurationManager.SetLogFile(o.LogFile);
+					}
+
+					if(o.DisablePeerMessengerSupport != ConfigurationManager.DisablePeerMessengerSupport)
+					{
+						ConfigurationManager.SetDisablePeerMessengerSupport(o.DisablePeerMessengerSupport);
 					}
 
 					MessageBox.Show(this, "Please restart Peer Messenger for the changes to take effect.", "Peer Messenger", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
@@ -500,7 +497,10 @@ namespace PeerMessenger
 
 				//Broadcast presence over PeerMessenger network. 
 				//The IPMsg listener does its own broadcasting.
-				udpManager.BroadcastPresence();
+				if(ConfigurationManager.DisablePeerMessengerSupport == false)
+				{
+					udpManager.BroadcastPresence();
+				}
 			}
 			catch(Exception ex)
 			{
@@ -527,6 +527,18 @@ namespace PeerMessenger
 			{
 				tmrSearch.Stop();
 				btnSearch_Click(null, null);
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void btnRefresh_Click(object sender, System.EventArgs e)
+		{
+			try
+			{
+				_Refresh();
 			}
 			catch(Exception ex)
 			{
@@ -602,6 +614,8 @@ namespace PeerMessenger
 						{
 							(Conversations[h.Sender] as Conversation).GetClient(h);
 						}
+
+						_UpdateStatus();
 					}
 				}
 				else
@@ -634,6 +648,8 @@ namespace PeerMessenger
 								(Conversations[sender] as Conversation).DeleteClient(sender);
 							}
 						}
+
+						_UpdateStatus();
 					}
 				}
 				else
@@ -691,12 +707,21 @@ namespace PeerMessenger
 		/// </summary>
 		private void _StopListening()
 		{
-			listener.Stop();
-			listenerThread.Join();
-			udpManager.BroadcastAbsence(self);
+			if(ConfigurationManager.DisablePeerMessengerSupport == false)
+			{
+				listener.Stop();
+				listenerThread.Join();
+				udpManager.BroadcastAbsence(self);
+			}
+
 			udpManager.BroadcastIPAbsence();
 			udpManager.Stop();
-			udpManagerThread.Join();
+
+			if(ConfigurationManager.DisablePeerMessengerSupport == false)
+			{
+				udpManagerThread.Join();
+			}
+
 			udpManagerThreadIp.Join();
 		}
 
@@ -705,16 +730,22 @@ namespace PeerMessenger
 		/// </summary>
 		private void _StartListening()
 		{
-			listener = new MessageListener(3089, this);
-			listenerThread = new Thread(new ThreadStart(listener.Listen));
-			listenerThread.Start();
+			if(ConfigurationManager.DisablePeerMessengerSupport == false)
+			{
+				listener = new MessageListener(3089, this);
+				listenerThread = new Thread(new ThreadStart(listener.Listen));
+				listenerThread.Start();
+			}
 
 			udpManager = new UdpBroadcastManager(3089, this, self);
 			udpManagerThreadIp = new Thread(new ThreadStart(udpManager.ListenIP));
 			udpManagerThreadIp.Start();
 
-			udpManagerThread = new Thread(new ThreadStart(udpManager.Listen));
-			udpManagerThread.Start();
+			if(ConfigurationManager.DisablePeerMessengerSupport == false)
+			{
+				udpManagerThread = new Thread(new ThreadStart(udpManager.Listen));
+				udpManagerThread.Start();
+			}
 		}
 
 		private void _Reconnect()
@@ -722,7 +753,18 @@ namespace PeerMessenger
 			_StopListening();
 			_StartListening();
 		}
-		#endregion										
 
+		private void _Refresh()
+		{
+			udpManager.BroadcastIPPresence();
+			tmrBroadcast.Enabled = true;
+			tmrBroadcast.Start();
+		}
+
+		private void _UpdateStatus()
+		{
+			sbMain.Text = hosts.Values.Count - 1 + " users online.";
+		}
+		#endregion										
 	}
 }

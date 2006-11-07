@@ -207,6 +207,8 @@ namespace PeerMessenger
 				{
 					txtLogFile.Text = LogFile;
 				}
+
+				chkPeer.Checked = DisablePeerMessengerSupport;
 			}
 			catch(Exception ex)
 			{

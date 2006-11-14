@@ -15,20 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4658533C5CC84D6E9E13A7E360C2F25B"
+        "MsmKey" = "8:_2A3EE449FB2E4F4B901ED0A1B4912005"
         "OwnerKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_4658533C5CC84D6E9E13A7E360C2F25B"
+        "MsmKey" = "8:_2A3EE449FB2E4F4B901ED0A1B4912005"
         "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -214,13 +214,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Peer Messenger"
-        "ProductCode" = "8:{76CF24F7-235C-4A81-8908-F203C3B26FAD}"
-        "PackageCode" = "8:{6EC7A126-8655-4850-B57A-AAAA6D59EC4B}"
+        "ProductCode" = "8:{7EAE9D4E-A0D8-4D29-BC05-4D0C83B2E4A6}"
+        "PackageCode" = "8:{0C756DF7-9615-4588-BD0F-94423BA429CB}"
         "UpgradeCode" = "8:{A1C12FFF-C7EF-4875-B13B-B0601B544733}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.0.7"
+        "ProductVersion" = "8:1.0.8"
         "Manufacturer" = "8:Maximum Impact"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://arunjeetsingh.livejournal.com"
@@ -740,7 +740,7 @@
         }
         "MergeModule"
         {
-            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_4658533C5CC84D6E9E13A7E360C2F25B"
+            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_2A3EE449FB2E4F4B901ED0A1B4912005"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"

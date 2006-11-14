@@ -12,8 +12,8 @@ namespace PeerMessenger
 	/// </summary>
 	internal sealed class MessageFormatter
 	{
-		public static readonly Guid Identifier = new Guid("{B8BFAADC-B235-4875-BE7C-6E6B7A5A04AA}");
-		private ILog logger = LogManager.GetLogger(typeof(MessageFormatter));		
+		public static readonly Guid Identifier = new Guid("{63EB0AA0-E3FE-47f2-A1B8-47DC70AE483F}");
+		private static ILog logger = LogManager.GetLogger(typeof(MessageFormatter));		
 
 		private MessageFormatter()
 		{
@@ -67,7 +67,7 @@ namespace PeerMessenger
 		
 		/// <summary>
 		/// Formats a message per the peer messenger protocol and returns it
-		/// as a byte array suitable for sending over a tcp connection.
+		/// as a byte array suitable for sending over a network connection.
 		/// </summary>
 		/// <param name="h">Sending host</param>
 		/// <param name="message">Message in string form</param>
@@ -111,15 +111,52 @@ namespace PeerMessenger
 			return FormatIpMessage(self, message, Command.IPMSG_SENDMSG | Command.IPMSG_SENDCHECKOPT);
 		}
 
+		internal static byte[] FormatIpFileSendInitMessage(Host self, SendFileInfo[] files, ref IpMessage m)
+		{
+			string nullChar = '\0'.ToString();
+			string additionalSection = string.Empty;
+			if(files != null && files.Length > 0)
+			{
+				for(int id = 0; id < files.Length; id++)
+				{
+					additionalSection += nullChar;
+					additionalSection += id + ":";
+					additionalSection += files[id].Name + ":";
+					additionalSection += Convert.ToString(files[id].Size, 16) + ":";
+					additionalSection += Convert.ToString(files[id].TimeModified, 16) + ":";
+					additionalSection += files[id].Attribute + ":";
+				}
+
+				additionalSection += (nullChar);
+			}
+
+			m = FormatIpMessageAsObject(self, additionalSection, Command.IPMSG_SENDMSG | Command.IPMSG_FILEATTACHOPT | Command.IPMSG_SENDCHECKOPT);
+			logger.Debug("Sending file message: " + m.ToString().Replace('\0', ' '));
+			return FormatIpMessage(self, additionalSection, Command.IPMSG_SENDMSG | Command.IPMSG_FILEATTACHOPT | Command.IPMSG_SENDCHECKOPT);
+		}
+
+		internal static byte[] FormatIpFileReceiveMessage(Host self, uint originalRequestPacket, SendFileInfo file)
+		{
+			string additionalSection = Convert.ToString(originalRequestPacket, 16) + ":" + Convert.ToString(file.ID, 16) + ":0";
+			return FormatIpMessage(self, additionalSection, Command.IPMSG_GETFILEDATA);
+		}
+
 		internal static byte[] FormatIpMessage(Host self, string message, ulong command)
+		{
+			byte[] msg = System.Text.Encoding.ASCII.GetBytes(FormatIpMessageAsObject(self, message, command).ToString());
+			return msg;
+		}
+
+		internal static IpMessage FormatIpMessageAsObject(Host self, string message, ulong command)
 		{
 			IpMessage m = new IpMessage(self);
 			m.Version = "1";
 			m.AdditionalSection = message;
 			m.Packet = (ulong)PacketCounter.Packet;
 			m.Command = command;
-			byte[] msg = System.Text.Encoding.ASCII.GetBytes(m.ToString());
-			return msg;
+			logger.Debug("Prepared IP message: " + m.ToString().Replace('\0', ' '));
+
+			return m;
 		}	
 		#endregion
 	}

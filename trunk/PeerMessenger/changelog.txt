@@ -28,3 +28,16 @@
 6. There was a problem sending URLs (eg: http://www.yahoo.com) because the IPMsg protocol uses ':' as a delimeter. Now fixed.
 7. Introduced a new flag in Options that lets a user turn off Peer Messenger protocol support. Not recommended! Only do this if you have trouble communicating with other Peer Messenger clients.
 8. Cleaned up configuration functionality. New class called ConfigurationManager introduced.
+
+1.0.8.0
+=======
+1. View log implemented because Panky spanky's in love with the damn feature.
+2. Partial rewrite of the way the Peer Messenger protocol functions. This is ongoing so for the moment "DisablePeerMessengerSupport" ships as True by default. This means PeerMessenger always uses the IP protocol from now on.
+
+1.0.9.0
+=======
+1. Todo: File transfer implementation. At least in IP. Would be good if we could also have it in the PeerMessenger protocol.
+2. Todo: Ability to right-click and copy/paste in the conversation window.
+3. Todo: Implement message sealing for IP users.
+4. Todo: Main window should pop up on single-clicking the system tray icon.
+5. Todo: Set focus to search box on popup from systray. Select entered text in search box when it is focussed.

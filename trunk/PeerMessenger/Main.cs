@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Configuration;
 using System.Xml;
+using System.Diagnostics;
 using log4net;
 
 namespace PeerMessenger
@@ -24,8 +25,8 @@ namespace PeerMessenger
 		private System.Windows.Forms.Button btnExit;		
 		private System.Windows.Forms.Button btnChat;
 
-		private Thread listenerThread;
-		private MessageListener listener;
+		private Thread fileListenerThread;
+		private FileListener fileListener;
 		private UdpBroadcastManager udpManager;
 		private Thread udpManagerThread, udpManagerThreadIp;
 		private Hashtable hosts = new Hashtable();
@@ -43,6 +44,7 @@ namespace PeerMessenger
 		object syncLock = new object();
 		private System.Windows.Forms.Button btnRefresh;
 		private System.Windows.Forms.StatusBar sbMain;
+		private System.Windows.Forms.MenuItem mnuViewLog;
 
 		private ILog logger = LogManager.GetLogger(typeof(MainForm));		
 
@@ -87,6 +89,7 @@ namespace PeerMessenger
 			this.btnChat = new System.Windows.Forms.Button();
 			this.cmnuMain = new System.Windows.Forms.ContextMenu();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
+			this.mnuViewLog = new System.Windows.Forms.MenuItem();
 			this.mnuExit = new System.Windows.Forms.MenuItem();
 			this.niPeerMessenger = new System.Windows.Forms.NotifyIcon(this.components);
 			this.tmrBroadcast = new System.Windows.Forms.Timer(this.components);
@@ -143,6 +146,7 @@ namespace PeerMessenger
 			// 
 			this.cmnuMain.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																					 this.menuItem1,
+																					 this.mnuViewLog,
 																					 this.mnuExit});
 			// 
 			// menuItem1
@@ -151,9 +155,15 @@ namespace PeerMessenger
 			this.menuItem1.Text = "&Options...";
 			this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
 			// 
+			// mnuViewLog
+			// 
+			this.mnuViewLog.Index = 1;
+			this.mnuViewLog.Text = "&View Log";
+			this.mnuViewLog.Click += new System.EventHandler(this.mnuViewLog_Click);
+			// 
 			// mnuExit
 			// 
-			this.mnuExit.Index = 1;
+			this.mnuExit.Index = 2;
 			this.mnuExit.Text = "E&xit";
 			this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
 			// 
@@ -545,6 +555,18 @@ namespace PeerMessenger
 				logger.Error(ex.Message, ex);
 			}
 		}
+
+		private void mnuViewLog_Click(object sender, System.EventArgs e)
+		{
+			try
+			{
+				Process.Start("notepad.exe", ConfigurationManager.LogFile.Replace("\\\\", "\\"));
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
 		#endregion
 	
 		#region Public properties
@@ -558,30 +580,80 @@ namespace PeerMessenger
 		#endregion
 
 		#region ISubscriber Members
+		public void GetStatusMessage(string sender, string message)
+		{
+			if(this.InvokeRequired == false)
+			{
+				GetMessage(sender, message, true);
+			}
+			else
+			{
+				this.BeginInvoke(new SendMessage(GetStatusMessage), new object[] {sender, message});
+			}
+		}
+
 		public void GetMessage(string sender, string message)
+		{
+			if(this.InvokeRequired == false)
+			{
+				GetMessage(sender, message, false);
+			}
+			else
+			{
+				this.BeginInvoke(new SendMessage(GetMessage), new object[] {sender, message});
+			}
+		}
+
+		public void GetFiles(string sender, SendFileInfo[] files, uint packet)
+		{
+			if(this.InvokeRequired == false)
+			{
+				lock(syncLock)
+				{
+					Conversation c = null;
+					Host host = hosts[sender] as Host;
+					if(!Conversations.Contains(sender))
+					{
+						c = new Conversation(this, host, self, udpManager);
+						Conversations.Add(host.Sender, c);					
+						c.Show();
+					}
+				
+					c = Conversations[host.Sender] as Conversation;
+					c.GetFiles(sender, files, packet);
+				}
+			}
+			else
+			{
+				this.BeginInvoke(new SendFiles(GetFiles), new object[] {sender, files, packet});
+			}
+		}
+
+		public void GetMessage(string sender, string message, bool status)
 		{
 			try
 			{
-				if(this.InvokeRequired == false)
+				lock(syncLock)
 				{
-					lock(syncLock)
+					Conversation c = null;
+					Host host = hosts[sender] as Host;
+					if(!Conversations.Contains(sender))
 					{
-						Conversation c = null;
-						Host host = hosts[sender] as Host;
-						if(!Conversations.Contains(sender))
-						{
-							c = new Conversation(this, host, self, udpManager);
-							Conversations.Add(host.Sender, c);					
-							c.Show();
-						}
+						c = new Conversation(this, host, self, udpManager);
+						Conversations.Add(host.Sender, c);					
+						c.Show();
+					}
 				
-						c = Conversations[host.Sender] as Conversation;
+					c = Conversations[host.Sender] as Conversation;
+
+					if(status)
+					{
+						c.GetStatusMessage(sender, message);
+					}
+					else
+					{
 						c.GetMessage(sender, message);
 					}
-				}
-				else
-				{
-					this.BeginInvoke(new SendMessage(GetMessage), new object[] {sender, message});
 				}
 			}
 			catch(Exception ex)
@@ -699,6 +771,8 @@ namespace PeerMessenger
 		private void _ExitHandler()
 		{			
 			_StopListening();
+			//The tray icon would hang around even after the application closed.
+			niPeerMessenger.Visible = false;
 			Application.Exit();
 		}
 
@@ -709,13 +783,15 @@ namespace PeerMessenger
 		{
 			if(ConfigurationManager.DisablePeerMessengerSupport == false)
 			{
-				listener.Stop();
-				listenerThread.Join();
+				//listener.Stop();
+				//listenerThread.Join();
 				udpManager.BroadcastAbsence(self);
 			}
 
 			udpManager.BroadcastIPAbsence();
 			udpManager.Stop();
+
+			fileListener.Stop();
 
 			if(ConfigurationManager.DisablePeerMessengerSupport == false)
 			{
@@ -723,6 +799,7 @@ namespace PeerMessenger
 			}
 
 			udpManagerThreadIp.Join();
+			fileListenerThread.Join();
 		}
 
 		/// <summary>
@@ -732,12 +809,16 @@ namespace PeerMessenger
 		{
 			if(ConfigurationManager.DisablePeerMessengerSupport == false)
 			{
-				listener = new MessageListener(3089, this);
-				listenerThread = new Thread(new ThreadStart(listener.Listen));
-				listenerThread.Start();
+				//listener = new MessageListener(3089, this);
+				//listenerThread = new Thread(new ThreadStart(listener.Listen));
+				//listenerThread.Start();
 			}
 
-			udpManager = new UdpBroadcastManager(3089, this, self);
+			fileListener = new FileListener(2425, this);
+			fileListenerThread = new Thread(new ThreadStart(fileListener.Listen));
+			fileListenerThread.Start();
+
+			udpManager = new UdpBroadcastManager(3089, this, self, fileListener);
 			udpManagerThreadIp = new Thread(new ThreadStart(udpManager.ListenIP));
 			udpManagerThreadIp.Start();
 
@@ -765,6 +846,6 @@ namespace PeerMessenger
 		{
 			sbMain.Text = hosts.Values.Count - 1 + " users online.";
 		}
-		#endregion										
+		#endregion												
 	}
 }

@@ -24,6 +24,7 @@ namespace PeerMessenger
 		private System.Windows.Forms.ListView listView1;
 		private System.Windows.Forms.ImageList ilContacts;
 		private System.Windows.Forms.Timer tmrBlink;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
 
 		private ILog logger = LogManager.GetLogger(typeof(TestMain));		
 
@@ -74,6 +75,7 @@ namespace PeerMessenger
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.ilContacts = new System.Windows.Forms.ImageList(this.components);
 			this.tmrBlink = new System.Windows.Forms.Timer(this.components);
+			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.SuspendLayout();
 			// 
 			// btnExit
@@ -107,6 +109,9 @@ namespace PeerMessenger
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
 			this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+																						this.columnHeader1});
+			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			listViewItem1.StateImageIndex = 0;
 			listViewItem2.StateImageIndex = 0;
 			listViewItem3.StateImageIndex = 0;
@@ -125,7 +130,7 @@ namespace PeerMessenger
 			this.listView1.Size = new System.Drawing.Size(232, 304);
 			this.listView1.SmallImageList = this.ilContacts;
 			this.listView1.TabIndex = 0;
-			this.listView1.View = System.Windows.Forms.View.List;
+			this.listView1.View = System.Windows.Forms.View.Details;
 			// 
 			// ilContacts
 			// 
@@ -138,6 +143,10 @@ namespace PeerMessenger
 			// 
 			this.tmrBlink.Interval = 5000;
 			this.tmrBlink.Tick += new System.EventHandler(this.tmrBlink_Tick);
+			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Width = 208;
 			// 
 			// TestMain
 			// 

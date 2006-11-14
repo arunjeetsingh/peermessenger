@@ -23,7 +23,15 @@ namespace PeerMessenger
 				retVal.Sender = messageComponents[2].Replace("\0", string.Empty);
 				retVal.SenderHost = messageComponents[3].Replace("\0", string.Empty);
 				retVal.Command = ulong.Parse(messageComponents[4]);
-				retVal.AdditionalSection = messageComponents[5].Replace("\0", string.Empty);
+
+				if((retVal.Command & (Command.IPMSG_SENDMSG | Command.IPMSG_FILEATTACHOPT)) == (Command.IPMSG_SENDMSG | Command.IPMSG_FILEATTACHOPT))
+				{
+					retVal.AdditionalSection = messageComponents[5];
+				}
+				else
+				{
+					retVal.AdditionalSection = messageComponents[5].Replace("\0", string.Empty);
+				}
 			}
 
 			return retVal;

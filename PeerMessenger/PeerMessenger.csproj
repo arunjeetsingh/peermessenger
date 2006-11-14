@@ -146,6 +146,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "FileListener.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Host.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -231,6 +236,11 @@
                 <File
                     RelPath = "PROT-ENG.TXT"
                     BuildAction = "None"
+                />
+                <File
+                    RelPath = "SendFileInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "TestMain.cs"

@@ -33,6 +33,8 @@ namespace PeerMessenger
 				{
 					bytes.Add(stream.ReadByte());
 				}
+				stream.Close();
+
 				byte[] packet = new byte[bytes.Count];
 
 				for(int i = 0; i < bytes.Count; i++)
@@ -41,28 +43,7 @@ namespace PeerMessenger
 				}
 
 				string p = Encoding.ASCII.GetString(packet);
-				StringReader sr = new StringReader(p);
-
-				XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
-				PeerMessage msg = xs.Deserialize(sr) as PeerMessage;
-			
-				if((msg.Command & Command.Presence) == Command.Presence)
-				{
-					Host existingEntry = ivListener.Subscriber.IsClientKnown(msg.Sender);
-					if(existingEntry != null && existingEntry.IP)
-					{
-						ivListener.Subscriber.DeleteClient(existingEntry.Sender);
-					}
-
-					string preferredName = msg.Message;
-					logger.Debug("Message sender's preferred name is " + preferredName);
-					ivListener.Subscriber.GetClient(new Host(msg.Sender, preferredName, msg.SenderHost));
-				}		
-				else if((msg.Command & Command.Message) == Command.Message)
-				{
-					logger.Debug(msg.Sender + " sent " + msg.Message);
-					ivListener.Subscriber.GetMessage(msg.Sender, msg.Message);
-				}				
+				IpMessage m = IpMessageLoader.Load(p);
 			}
 
 			ivIncoming.Close();

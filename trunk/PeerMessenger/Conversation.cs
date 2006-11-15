@@ -8,6 +8,7 @@ using System.Net;
 using log4net;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace PeerMessenger
 {
@@ -31,7 +32,9 @@ namespace PeerMessenger
 		private ILog logger = LogManager.GetLogger(typeof(Conversation));
 		private System.Windows.Forms.SaveFileDialog sfReceive;
 		private ILog messageLogger = LogManager.GetLogger("MessageLogger");
-		byte[] contents;
+		ArrayList contents;
+		byte[] buf;
+		ManualResetEvent wh = new ManualResetEvent(true);
 
 		public Conversation(ISubscriber mainWindow, Host host, Host self, UdpBroadcastManager udpManager) : this()
 		{
@@ -243,15 +246,37 @@ namespace PeerMessenger
 
 		public void ReadFile(IAsyncResult result)
 		{
-			object[] state = result.AsyncState as object[];
-			TcpClient client = state[0] as TcpClient;
-			SendFileInfo file = state[1] as SendFileInfo;
-			FileStream fs = new FileStream(file.FullName, FileMode.Create, FileAccess.Write, FileShare.None);
-			string p = Encoding.ASCII.GetString(contents);
-			fs.Write(contents, 0, contents.Length);
-			fs.Close();
+			if(result.IsCompleted)
+			{
+				object[] state = result.AsyncState as object[];
+				TcpClient client = state[0] as TcpClient;				
+				SendFileInfo file = state[1] as SendFileInfo;				
+				bool lastFile = (bool)state[2];
+				NetworkStream stream = client.GetStream();
+				logger.Debug("More data available? " + stream.DataAvailable);			
 
-			client.Close();
+				int bytesRead = stream.EndRead(result);
+				byte[] temp = new byte[bytesRead];
+				Array.Copy(buf, temp, bytesRead);
+				contents.AddRange(temp);
+
+				if(stream.DataAvailable == false)
+				{					
+					logger.Debug("Got " + file.Name);
+					byte[] bfile = (byte[])contents.ToArray(typeof(byte));
+					FileStream fs = new FileStream(file.FullName, FileMode.Create, FileAccess.Write, FileShare.None);
+					fs.Write(bfile, 0, bfile.Length);
+					fs.Close();
+					client.Close();
+					showMessage("\n*** " + file.Name + " received.");
+					wh.Set();
+				}
+				else
+				{					
+					buf = new byte[buf.Length];
+					stream.BeginRead(buf, 0, buf.Length, new AsyncCallback(ReadFile), new object[] {client, file, lastFile});
+				}
+			}
 		}
 
 		public void GetFiles(string sender, SendFileInfo[] files, uint packet)
@@ -264,21 +289,29 @@ namespace PeerMessenger
 					{
 						FlashWindowHelper.FlashWindowEx(this.Handle);
 
-						foreach(SendFileInfo file in files)
+						for(int i = 0; i < files.Length; i++)
 						{
+							SendFileInfo file = files[i];
+							logger.Debug("Requesting file " + file.Name);
 							sfReceive.FileName = file.Name;
 							if(sfReceive.ShowDialog() == DialogResult.OK)
 							{
-								TcpClient client = new TcpClient(h.HostName, 2425);
+								TcpClient client = new TcpClient();
 								client.NoDelay = true;
+								client.Connect(h.HostName, 2425);
 								NetworkStream stream = client.GetStream();
 								byte[] msg = MessageFormatter.FormatIpFileReceiveMessage(ivSelf, packet, file);
 								stream.Write(msg, 0, msg.Length);
-								contents = new byte[file.Size];
+								contents = new ArrayList();
+								buf = new byte[file.Size];
 								file.FullName = sfReceive.FileName;
-								stream.BeginRead(contents, 0, contents.Length, new AsyncCallback(ReadFile), new object[] {client, file});
+								showMessage("\n*** Receiving " + file.Name);
+								stream.BeginRead(buf, 0, buf.Length, new AsyncCallback(ReadFile), new object[] {client, file, i == (files.Length - 1)});
 							}
-						}
+							
+							wh.Reset();
+							wh.WaitOne();
+						}			
 					}					
 				}
 			}
@@ -461,13 +494,14 @@ namespace PeerMessenger
 				}
 
 				logger.Debug("Files dropped: ");
-				SendFileInfo[] filesInfo = new SendFileInfo[files.Length];				
-				showMessage("Sending file(s):");
+				Hashtable filesInfo = new Hashtable();
+				showMessage("*** Sending file(s):");
 				for(int i = 0; i < files.Length; i++)
 				{
-					logger.Debug(files[i]);
-					showMessage("\n" + files[i]);
+					logger.Debug(files[i]);					
 					filesInfo[i] = new SendFileInfo(files[i]);
+					showMessage("\n*** " + (filesInfo[i] as SendFileInfo).Name);
+					(filesInfo[i] as SendFileInfo).ID = i;
 				}
 				
 				ivUdpManager.SendIPFile(h.HostName, filesInfo);
@@ -476,7 +510,7 @@ namespace PeerMessenger
 
 		private void Conversation_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
 		{
-			if(IpSession && e.Data.GetDataPresent(DataFormats.FileDrop) && ((string[])e.Data.GetData(DataFormats.FileDrop)).Length == 1)
+			if(IpSession && e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				e.Effect = DragDropEffects.Copy;
 			}

@@ -36,7 +36,7 @@
 
 1.0.9.0
 =======
-1. Todo: File transfer implementation. At least in IP. Would be good if we could also have it in the PeerMessenger protocol.
+1. File transfer implementation. At least in IP. Would be good if we could also have it in the PeerMessenger protocol.
 2. Todo: Ability to right-click and copy/paste in the conversation window.
 3. Todo: Implement message sealing for IP users.
 4. Todo: Main window should pop up on single-clicking the system tray icon.

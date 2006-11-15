@@ -274,7 +274,7 @@ namespace PeerMessenger
 			listenerIp.Send(broadCast, broadCast.Length, host, _IPPort);
 		}
 
-		public void SendIPFile(string host, SendFileInfo[] files)
+		public void SendIPFile(string host, Hashtable files)
 		{
 			IpMessage m = null;
 			byte[] msg = MessageFormatter.FormatIpFileSendInitMessage(ivSelf, files, ref m);

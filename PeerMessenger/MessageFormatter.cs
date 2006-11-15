@@ -4,6 +4,7 @@ using log4net;
 using System.Text;
 using System.Xml.Serialization;
 using System.IO;
+using System.Collections;
 
 namespace PeerMessenger
 {
@@ -111,20 +112,23 @@ namespace PeerMessenger
 			return FormatIpMessage(self, message, Command.IPMSG_SENDMSG | Command.IPMSG_SENDCHECKOPT);
 		}
 
-		internal static byte[] FormatIpFileSendInitMessage(Host self, SendFileInfo[] files, ref IpMessage m)
+		internal static byte[] FormatIpFileSendInitMessage(Host self, Hashtable files, ref IpMessage m)
 		{
 			string nullChar = '\0'.ToString();
+			string alert = '\a'.ToString();
 			string additionalSection = string.Empty;
-			if(files != null && files.Length > 0)
+			if(files != null && files.Values.Count > 0)
 			{
-				for(int id = 0; id < files.Length; id++)
-				{
-					additionalSection += nullChar;
+				additionalSection += nullChar;
+
+				foreach(int id in files.Keys)
+				{					
 					additionalSection += id + ":";
-					additionalSection += files[id].Name + ":";
-					additionalSection += Convert.ToString(files[id].Size, 16) + ":";
-					additionalSection += Convert.ToString(files[id].TimeModified, 16) + ":";
-					additionalSection += files[id].Attribute + ":";
+					additionalSection += (files[id] as SendFileInfo).Name + ":";
+					additionalSection += Convert.ToString((files[id] as SendFileInfo).Size, 16) + ":";
+					additionalSection += Convert.ToString((files[id] as SendFileInfo).TimeModified, 16) + ":";
+					additionalSection += (files[id] as SendFileInfo).Attribute + ":";
+					additionalSection += alert;
 				}
 
 				additionalSection += (nullChar);

@@ -13,7 +13,6 @@ namespace PeerMessenger
 	/// </summary>
 	internal sealed class MessageFormatter
 	{
-		public static readonly Guid Identifier = new Guid("{63EB0AA0-E3FE-47f2-A1B8-47DC70AE483F}");
 		private static ILog logger = LogManager.GetLogger(typeof(MessageFormatter));		
 
 		private MessageFormatter()
@@ -23,15 +22,10 @@ namespace PeerMessenger
 		#region PeerMessenger messages
 		internal static byte[] GetPresenceMessage(Host h)
 		{
-			return GetPresenceMessage(h, true);
+			return GetPresenceMessage(h, false);
 		}
 
-		internal static byte[] GetPresenceMessage(Host h, bool attachId)
-		{
-			return GetPresenceMessage(h, attachId, false);
-		}
-
-		internal static byte[] GetPresenceMessage(Host h, bool attachId, bool forceConfirmation)
+		internal static byte[] GetPresenceMessage(Host h, bool forceConfirmation)
 		{
 			ulong command = Command.Presence;
 			if(forceConfirmation)
@@ -39,17 +33,12 @@ namespace PeerMessenger
 				command |= Command.ForceConfirmation;
 			}
 
-			return GetPresenceMessage(h, attachId, command);
+			return GetPresenceMessage(h, command);
 		}
 
-		internal static byte[] GetPresenceMessage(Host h, bool attachId, ulong command)
+		internal static byte[] GetPresenceMessage(Host h, ulong command)
 		{
 			string message = string.Empty;
-			if(attachId)
-			{
-				message += Identifier.ToString();
-			}
-
 			message += FormatMessageAsString(h, h.PreferredName, command);
 
 			byte[] msg = Encoding.ASCII.GetBytes(message);
@@ -107,9 +96,15 @@ namespace PeerMessenger
 			return FormatIpMessage(self, self.PreferredName, Command.IPMSG_BR_EXIT | Command.IPMSG_FILEATTACHOPT);
 		}
 
-		internal static byte[] FormatIpMessage(Host self, string message)
+		internal static byte[] FormatIpMessage(Host self, string message, bool seal)
 		{
-			return FormatIpMessage(self, message, Command.IPMSG_SENDMSG | Command.IPMSG_SENDCHECKOPT);
+			ulong cmd = Command.IPMSG_SENDMSG | Command.IPMSG_SENDCHECKOPT;
+			if(seal)
+			{
+				cmd |= Command.IPMSG_SECRETOPT;
+			}
+
+			return FormatIpMessage(self, message, cmd);
 		}
 
 		internal static byte[] FormatIpFileSendInitMessage(Host self, Hashtable files, ref IpMessage m)

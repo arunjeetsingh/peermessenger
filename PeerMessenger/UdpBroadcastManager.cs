@@ -11,9 +11,9 @@ using System.Xml.Serialization;
 namespace PeerMessenger
 {	
 	/// <summary>
-	/// Summary description for UdpBroadcastManager.
+	/// Summary description for UdpManager.
 	/// </summary>
-	public class UdpBroadcastManager
+	public class UdpManager
 	{
 		private int ivPort;
 		private bool ivStop = false;
@@ -23,7 +23,7 @@ namespace PeerMessenger
 		Host ivSelf;
 		Hashtable packetTracker;
 		FileListener ivFileListener;
-		private ILog logger = LogManager.GetLogger(typeof(UdpBroadcastManager));
+		private ILog logger = LogManager.GetLogger(typeof(UdpManager));
 		private const string _PeerIP = "226.254.82.220";
 		private const string _BroadcastIP = "255.255.255.255";
 		private const int _IPPort = 2425;
@@ -36,7 +36,7 @@ namespace PeerMessenger
 			}
 		}
 
-		public UdpBroadcastManager(int port, ISubscriber sub, Host self, FileListener fileListener)
+		public UdpManager(int port, ISubscriber sub, Host self, FileListener fileListener)
 		{
 			ivPort = port;
 			ivSub = sub;
@@ -62,42 +62,34 @@ namespace PeerMessenger
 					byte[] request = listener.Receive(ref callerEndpoint);
 					string p = Encoding.ASCII.GetString(request, 0, request.Length);
 
-					// Verify first 128 bits are indeed our guid
-					if (request.Length >= MessageFormatter.Identifier.ToString().Length)
-					{
-						logger.Debug("Broadcast from " + callerEndpoint.Address.ToString());
-						string poo = Encoding.ASCII.GetString(request);
+					logger.Debug("Broadcast from " + callerEndpoint.Address.ToString());
 
-						if (p.StartsWith(MessageFormatter.Identifier.ToString()))
-						{
-							string message = poo.Substring(MessageFormatter.Identifier.ToString().Length);
-							StringReader sr = new StringReader(message);
-							XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
-							PeerMessage msg = xs.Deserialize(sr) as PeerMessage;
+					string message = Encoding.ASCII.GetString(request);
+					StringReader sr = new StringReader(message);
+					XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
+					PeerMessage msg = xs.Deserialize(sr) as PeerMessage;
 							
-							if((msg.Command & Command.Presence) == Command.Presence)
-							{
-								Host newClient = new Host(msg.Sender, msg.Message, msg.SenderHost);
-								Subscriber.GetClient(newClient);
-								ConfirmPresence(newClient);
-							}
-							else if((msg.Command & Command.AcknowledgePresence) == Command.AcknowledgePresence)
-							{
-								Subscriber.GetClient(new Host(msg.Sender, msg.Message, msg.SenderHost));
-							}							
-							else if((msg.Command & Command.Absence) == Command.Absence)
-							{
-								Subscriber.DeleteClient(msg.Sender);
-							}
-							else if((msg.Command & Command.AcknowledgeMessage) == Command.AcknowledgeMessage)
-							{
-								//Message acknowledged
-							}
-							else if((msg.Command & Command.Message) == Command.Message)
-							{
-								Subscriber.GetMessage(msg.Sender, msg.Message);
-							}
-						}
+					if((msg.Command & Command.Presence) == Command.Presence)
+					{
+						Host newClient = new Host(msg.Sender, msg.Message, msg.SenderHost);
+						Subscriber.GetClient(newClient);
+						ConfirmPresence(newClient);
+					}
+					else if((msg.Command & Command.AcknowledgePresence) == Command.AcknowledgePresence)
+					{
+						Subscriber.GetClient(new Host(msg.Sender, msg.Message, msg.SenderHost));
+					}							
+					else if((msg.Command & Command.Absence) == Command.Absence)
+					{
+						Subscriber.DeleteClient(msg.Sender);
+					}
+					else if((msg.Command & Command.AcknowledgeMessage) == Command.AcknowledgeMessage)
+					{
+						//Message acknowledged
+					}
+					else if((msg.Command & Command.Message) == Command.Message)
+					{
+						Subscriber.GetMessage(msg.Sender, msg.Message);
 					}
 				}
 			}
@@ -127,10 +119,17 @@ namespace PeerMessenger
 						if(m.Command == Command.IPMSG_RECVMSG)
 						{
 							//Message acknowledged
+							//Answer to IPMSG_SENDCHECKOPT
 						}
 						else if(m.Command == Command.IPMSG_READMSG)
 						{
 							//Sealed message opened
+							Host h = Subscriber.IsClientKnown(m.Sender);
+
+							if(h != null)
+							{
+								Subscriber.GetStatusMessage(m.Sender, h.PreferredName + " has opened your message.");
+							}
 						}
 						else if(m.Command == Command.IPMSG_RELEASEFILES)
 						{
@@ -146,15 +145,18 @@ namespace PeerMessenger
 						}
 						else if((m.Command & Command.IPMSG_ANSENTRY) == Command.IPMSG_ANSENTRY)
 						{
+							//Presence broadcast answered. Add this peer to your list
 							Subscriber.GetClient(new Host(m.Sender, m.AdditionalSection, m.SenderHost, true));
 						}
 						else if((m.Command & Command.IPMSG_BR_ENTRY) == Command.IPMSG_BR_ENTRY && (m.Command & Command.IPMSG_FILEATTACHOPT) == Command.IPMSG_FILEATTACHOPT)
 						{
+							//Presence broadcast from peer
 							Subscriber.GetClient(new Host(m.Sender, m.AdditionalSection, m.SenderHost, true));
 							AnswerEntry(m);
 						}
 						else if((m.Command & Command.IPMSG_BR_EXIT) == Command.IPMSG_BR_EXIT && (m.Command & Command.IPMSG_FILEATTACHOPT) == Command.IPMSG_FILEATTACHOPT)
 						{
+							//Peer saying bye bye
 							Subscriber.DeleteClient(m.Sender);
 						}
 						else if((m.Command & (Command.IPMSG_SENDMSG | Command.IPMSG_FILEATTACHOPT)) == (Command.IPMSG_SENDMSG | Command.IPMSG_FILEATTACHOPT))
@@ -164,11 +166,13 @@ namespace PeerMessenger
 							
 							if(parts != null && parts.Length > 0)
 							{
+								//See if there's a message accompanying the files
 								if(parts[0].Length > 0)
 								{
 									Subscriber.GetMessage(m.Sender, parts[0]);
 								}
 
+								//Parse info about the individual files
 								parts = parts[1].Split('\a');
 								SendFileInfo[] files = new SendFileInfo[parts.Length - 1];
 								for(int i = 0; i < parts.Length - 1; i++)
@@ -183,9 +187,11 @@ namespace PeerMessenger
 								}
 
 								uint inputPacket = ((uint)m.Packet);
+								//Tell subscribers that we have incoming files
 								Subscriber.GetFiles(m.Sender, files, inputPacket);
 							}
 
+							//Acknowledge the message if its needed
 							if((m.Command & Command.IPMSG_SENDCHECKOPT) == Command.IPMSG_SENDCHECKOPT)
 							{
 								AcknowledgeMessage(m);
@@ -193,7 +199,10 @@ namespace PeerMessenger
 						}
 						else if((m.Command & Command.IPMSG_SENDMSG) == Command.IPMSG_SENDMSG)
 						{
+							//Received a text message
 							Subscriber.GetMessage(m.Sender, m.Message);
+
+							//Acknowledge the message if its needed
 							if((m.Command & Command.IPMSG_SENDCHECKOPT) == Command.IPMSG_SENDCHECKOPT)
 							{
 								AcknowledgeMessage(m);
@@ -202,6 +211,7 @@ namespace PeerMessenger
 					}
 					else
 					{
+						//Acknowledge any stray messages
 						if((m.Command & Command.IPMSG_SENDCHECKOPT) == Command.IPMSG_SENDCHECKOPT)
 						{
 							AcknowledgeMessage(m);
@@ -262,15 +272,19 @@ namespace PeerMessenger
 
 		public void Send(string host, string message)
 		{
-			string m = MessageFormatter.Identifier.ToString();
-			m += MessageFormatter.FormatMessageAsString(ivSelf, message, Command.Message);
+			string m = MessageFormatter.FormatMessageAsString(ivSelf, message, Command.Message);
 			byte[] broadcast = Encoding.ASCII.GetBytes(m);
 			listener.Send(broadcast, broadcast.Length, host, ivPort);
 		}
 
 		public void SendIP(string host, string message)
 		{
-			byte[] broadCast = MessageFormatter.FormatIpMessage(ivSelf, message);
+			SendIP(host, message, false);
+		}
+
+		public void SendIP(string host, string message, bool seal)
+		{
+			byte[] broadCast = MessageFormatter.FormatIpMessage(ivSelf, message, seal);
 			listenerIp.Send(broadCast, broadCast.Length, host, _IPPort);
 		}
 
@@ -315,7 +329,7 @@ namespace PeerMessenger
 
 		public void BroadcastPresence(Host h, bool forceConfirm)
 		{
-			BroadcastPresence(h, forceConfirm, MessageFormatter.GetPresenceMessage(h, true, forceConfirm), new IPEndPoint(IPAddress.Parse(_PeerIP), ivPort), null);
+			BroadcastPresence(h, forceConfirm, MessageFormatter.GetPresenceMessage(h, forceConfirm), new IPEndPoint(IPAddress.Parse(_PeerIP), ivPort), null);
 		}
 
 		public void BroadcastPresence(Host h, bool forceConfirm, byte[] presenceMessage, IPEndPoint to, IPEndPoint from)
@@ -353,7 +367,7 @@ namespace PeerMessenger
 
 		public void ConfirmPresence(Host h)
 		{
-			byte[] bMsg = Encoding.ASCII.GetBytes(MessageFormatter.Identifier + MessageFormatter.FormatMessageAsString(ivSelf, ivSelf.PreferredName, Command.AcknowledgePresence));
+			byte[] bMsg = Encoding.ASCII.GetBytes(MessageFormatter.FormatMessageAsString(ivSelf, ivSelf.PreferredName, Command.AcknowledgePresence));
 			listener.Send(bMsg, bMsg.Length, h.HostName, ivPort);
 		}		
 	}	

@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP LastOpenVersion = "7.10.3077" >
         <Build>
-            <Settings ReferencePath = "C:\development\Dependancies\GwsPlus\;C:\development\PeerMessenger\;C:\development\PeerMessenger\PeerMessenger\" >
+            <Settings ReferencePath = "C:\development\PeerMessenger\;C:\development\PeerMessenger\PeerMessenger\;" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"

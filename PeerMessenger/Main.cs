@@ -27,7 +27,7 @@ namespace PeerMessenger
 
 		private Thread fileListenerThread;
 		private FileListener fileListener;
-		private UdpBroadcastManager udpManager;
+		private UdpManager udpManager;
 		private Thread udpManagerThread, udpManagerThreadIp;
 		private Hashtable hosts = new Hashtable();
 		private Hashtable ivConversations = new Hashtable();
@@ -275,7 +275,7 @@ namespace PeerMessenger
 		{
 			try
 			{
-				txtSearch.Focus();
+				_FocusSearch();
 			}
 			catch(Exception ex)
 			{
@@ -449,20 +449,6 @@ namespace PeerMessenger
 			}
 		}
 
-		private void niPeerMessenger_DoubleClick(object sender, System.EventArgs e)
-		{
-			try
-			{
-				niPeerMessenger.Visible = false;
-				this.ShowInTaskbar = true;
-				this.Show();
-			}
-			catch(Exception ex)
-			{
-				logger.Error(ex.Message, ex);
-			}
-		}
-
 		private void menuItem1_Click(object sender, System.EventArgs e)
 		{
 			try
@@ -472,6 +458,8 @@ namespace PeerMessenger
 				string logFile = ConfigurationManager.LogFile.Replace("\\\\", "\\");
 				o.LogFile = logFile;
 				o.DisablePeerMessengerSupport = ConfigurationManager.DisablePeerMessengerSupport;
+				o.Seal = ConfigurationManager.Seal;
+
 				if(o.ShowDialog() == DialogResult.OK)
 				{
 					if(o.UserName != self.PreferredName)
@@ -487,6 +475,11 @@ namespace PeerMessenger
 					if(o.DisablePeerMessengerSupport != ConfigurationManager.DisablePeerMessengerSupport)
 					{
 						ConfigurationManager.SetDisablePeerMessengerSupport(o.DisablePeerMessengerSupport);
+					}
+
+					if(o.Seal != ConfigurationManager.Seal)
+					{
+						ConfigurationManager.SetSeal(o.Seal);
 					}
 
 					MessageBox.Show(this, "Please restart Peer Messenger for the changes to take effect.", "Peer Messenger", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
@@ -561,6 +554,21 @@ namespace PeerMessenger
 			try
 			{
 				Process.Start("notepad.exe", ConfigurationManager.LogFile.Replace("\\\\", "\\"));
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void niPeerMessenger_DoubleClick(object sender, System.EventArgs e)
+		{
+			try
+			{
+				niPeerMessenger.Visible = false;
+				this.ShowInTaskbar = true;
+				this.Show();
+				_FocusSearch();
 			}
 			catch(Exception ex)
 			{
@@ -743,6 +751,15 @@ namespace PeerMessenger
 
 		#region Private methods
 		/// <summary>
+		/// Set focus to the search box
+		/// </summary>
+		private void _FocusSearch()
+		{
+			txtSearch.Focus();
+			txtSearch.SelectAll();
+		}
+
+		/// <summary>
 		/// Start a conversation with the currently selected host
 		/// </summary>
 		private void _StartConversation()
@@ -818,7 +835,7 @@ namespace PeerMessenger
 			fileListenerThread = new Thread(new ThreadStart(fileListener.Listen));
 			fileListenerThread.Start();
 
-			udpManager = new UdpBroadcastManager(3089, this, self, fileListener);
+			udpManager = new UdpManager(3089, this, self, fileListener);
 			udpManagerThreadIp = new Thread(new ThreadStart(udpManager.ListenIP));
 			udpManagerThreadIp.Start();
 
@@ -846,6 +863,6 @@ namespace PeerMessenger
 		{
 			sbMain.Text = hosts.Values.Count - 1 + " users online.";
 		}
-		#endregion												
+		#endregion															
 	}
 }

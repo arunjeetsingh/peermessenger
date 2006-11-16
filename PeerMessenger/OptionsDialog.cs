@@ -29,7 +29,9 @@ namespace PeerMessenger
 		private string _LogFile;
 		private System.Windows.Forms.CheckBox chkPeer;
 		private ILog logger = LogManager.GetLogger(typeof(OptionsDialog));
+		private System.Windows.Forms.CheckBox chkSeal;
 		private bool _DisablePeerMessengerSupport;
+		private bool _Seal;
 
 		public OptionsDialog()
 		{
@@ -74,6 +76,7 @@ namespace PeerMessenger
 			this.btnBrowse = new System.Windows.Forms.Button();
 			this.sfLog = new System.Windows.Forms.SaveFileDialog();
 			this.chkPeer = new System.Windows.Forms.CheckBox();
+			this.chkSeal = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// txtUserName
@@ -94,7 +97,7 @@ namespace PeerMessenger
 			// 
 			// btnOk
 			// 
-			this.btnOk.Location = new System.Drawing.Point(224, 136);
+			this.btnOk.Location = new System.Drawing.Point(224, 168);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(64, 24);
 			this.btnOk.TabIndex = 3;
@@ -104,7 +107,7 @@ namespace PeerMessenger
 			// btnCancel
 			// 
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(296, 136);
+			this.btnCancel.Location = new System.Drawing.Point(296, 168);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(64, 24);
 			this.btnCancel.TabIndex = 4;
@@ -153,13 +156,24 @@ namespace PeerMessenger
 			this.chkPeer.Text = "Disable Peer Messenger protocol support (Warning: only turn off if you are having" +
 				" trouble communicating with other Peer Messenger clients)";
 			// 
+			// chkSeal
+			// 
+			this.chkSeal.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.chkSeal.Location = new System.Drawing.Point(8, 128);
+			this.chkSeal.Name = "chkSeal";
+			this.chkSeal.Size = new System.Drawing.Size(348, 24);
+			this.chkSeal.TabIndex = 8;
+			this.chkSeal.Text = "Messages should be sealed by default";
+			this.chkSeal.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			// 
 			// OptionsDialog
 			// 
 			this.AcceptButton = this.btnOk;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(368, 167);
+			this.ClientSize = new System.Drawing.Size(368, 199);
 			this.ControlBox = false;
+			this.Controls.Add(this.chkSeal);
 			this.Controls.Add(this.chkPeer);
 			this.Controls.Add(this.txtLogFile);
 			this.Controls.Add(this.txtUserName);
@@ -185,6 +199,7 @@ namespace PeerMessenger
 				UserName = txtUserName.Text;
 				LogFile = txtLogFile.Text;
 				DisablePeerMessengerSupport = chkPeer.Checked;
+				Seal = chkSeal.Checked;
 				DialogResult= DialogResult.OK;
 				this.Dispose();
 			}
@@ -209,6 +224,7 @@ namespace PeerMessenger
 				}
 
 				chkPeer.Checked = DisablePeerMessengerSupport;
+				chkSeal.Checked = Seal;
 			}
 			catch(Exception ex)
 			{
@@ -277,6 +293,18 @@ namespace PeerMessenger
 			set
 			{
 				_DisablePeerMessengerSupport = value;
+			}
+		}
+
+		public bool Seal
+		{
+			get
+			{
+				return _Seal;
+			}
+			set
+			{
+				_Seal = value;
 			}
 		}
 	}

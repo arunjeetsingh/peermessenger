@@ -74,12 +74,7 @@ namespace PeerMessenger
 
 		public override string ToString()
 		{
-			string retVal = PreferredName.Replace("\0", "");
-			if(IP)
-			{
-				retVal += " (IP)";
-			}
-
+			string retVal = PreferredName.Replace("\0", " ");
 			return retVal;
 		}
 

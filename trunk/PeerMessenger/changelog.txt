@@ -36,8 +36,7 @@
 
 1.0.9.0
 =======
-1. File transfer implementation. At least in IP. Would be good if we could also have it in the PeerMessenger protocol.
-2. Todo: Ability to right-click and copy/paste in the conversation window.
-3. Todo: Implement message sealing for IP users.
-4. Todo: Main window should pop up on single-clicking the system tray icon.
-5. Todo: Set focus to search box on popup from systray. Select entered text in search box when it is focussed.
+1. File transfer implementation. On the IP protocol only at the moment.
+2. Ability to right-click and copy/paste in the conversation window.
+3. Can now send sealed messages and get status info on whether they were opened. Doesn't work the other way round at the moment. Not sure we even need it.
+4. Set focus to search box on popup from systray. Select entered text in search box when it is focussed.

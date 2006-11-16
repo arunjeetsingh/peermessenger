@@ -15,20 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2A3EE449FB2E4F4B901ED0A1B4912005"
+        "MsmKey" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2CCB4AD7032646ACB5160CAD499CE239"
         "OwnerKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_2A3EE449FB2E4F4B901ED0A1B4912005"
+        "MsmKey" = "8:_2CCB4AD7032646ACB5160CAD499CE239"
         "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2BF25E2FB1C443BEA3C6DFD48493439D"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -214,13 +214,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Peer Messenger"
-        "ProductCode" = "8:{7EAE9D4E-A0D8-4D29-BC05-4D0C83B2E4A6}"
-        "PackageCode" = "8:{0C756DF7-9615-4588-BD0F-94423BA429CB}"
+        "ProductCode" = "8:{8DB9BE2A-7409-4BAA-902D-3A20706BC3E4}"
+        "PackageCode" = "8:{B8227D13-BDAB-4245-8F3A-4E96F6B43289}"
         "UpgradeCode" = "8:{A1C12FFF-C7EF-4875-B13B-B0601B544733}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.0.8"
+        "ProductVersion" = "8:1.0.9"
         "Manufacturer" = "8:Maximum Impact"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://arunjeetsingh.livejournal.com"
@@ -740,7 +740,7 @@
         }
         "MergeModule"
         {
-            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_2A3EE449FB2E4F4B901ED0A1B4912005"
+            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_2CCB4AD7032646ACB5160CAD499CE239"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -759,7 +759,7 @@
         {
             "{8062640A-2EEE-46E9-AB67-688E9A886E9F}:_6900489A6F6840AD96C15E00AA31B8F5"
             {
-            "SourcePath" = "8:..\\PeerMessenger\\obj\\Release\\PeerMessenger.exe"
+            "SourcePath" = "8:..\\PeerMessenger\\obj\\Debug\\PeerMessenger.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0635DC41B3DC4364B30A4809323D6196"

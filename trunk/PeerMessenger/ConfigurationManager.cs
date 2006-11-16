@@ -13,6 +13,7 @@ namespace PeerMessenger
 		private static string _UserName;
 		private static string _LogFile;
 		private static bool _DisablePeerMessengerSupport;
+		private static bool _Seal;
 
 		static ConfigurationManager()
 		{
@@ -22,6 +23,12 @@ namespace PeerMessenger
 			if(disablePeerMessengerSupport != null)
 			{
 				_DisablePeerMessengerSupport = bool.Parse(disablePeerMessengerSupport);
+			}
+
+			string seal = _GetConfigValue("Seal");
+			if(seal != null)
+			{
+				_Seal = bool.Parse(seal);
 			}
 
 			XmlDocument doc = new XmlDocument();
@@ -90,6 +97,11 @@ namespace PeerMessenger
 			_SetConfigValue("DisablePeerMessengerSupport", val.ToString());
 		}
 
+		public static void SetSeal(bool val)
+		{
+			_SetConfigValue("Seal", val.ToString());
+		}
+
 		public static string UserName
 		{
 			get
@@ -111,6 +123,14 @@ namespace PeerMessenger
 			get
 			{
 				return _DisablePeerMessengerSupport;
+			}
+		}
+
+		public static bool Seal
+		{
+			get
+			{
+				return _Seal;
 			}
 		}
 	}

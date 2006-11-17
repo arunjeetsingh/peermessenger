@@ -1,0 +1,43 @@
+1.0.4.0
+=======
+1. Tcp send/recieve for PeerMessenger now uses the NoDelay flag. Should make PeerMessenger protocol detection snappier (in theory).
+2. Better exception handling in the UI forms.
+3. The main window isn't owner of conversations any longer. Hopefully this will fix the issue with conversations windows failing to render after restoring from system tray. Side effect: Minimizing main window has no affect on conversation windows now.
+4. Implemented the new search feature to search through contacts.
+
+1.0.5.0
+=======
+1. Show the user an error message and quit if the required ports aren't available at startup. Right now, this condition leads to a dead application.
+2. Implement window flashing to notify user of new messages.
+
+1.0.6.0
+=======
+1. The search box had a bug. It wouldn't match different cases correctly. Now fixed.
+2. IP packets get dropped sometimes. This shouldn't happen any longer.
+3. Don't rethrow the exception when application fails to initialize. This would make a CLR debugger box appear. Doesn't happen anymore.
+4. Huge issue in the IP Messenger protocol implementation! If a peer came in after you log in your client would acknowledge them but NOT set them up as a host! Hopefully fixed now.
+5. IP listener did not filter out message acknowledgments. With the changes in 4, these would be mistaken as actual messages. Fixed now.
+
+1.0.7.0
+=======
+1. New icon.
+2. Added Refresh functionality.
+3. Added a status bar and cleaned up the main window.
+4. Seperated out IPMsg presence code from the listener.
+5. People are saying that Peer Messenger to Peer Messenger delivery does not work as expected. Needs looking into. Perhaps I need to switch to using UDP for the PeerMessenger protocol too.
+6. There was a problem sending URLs (eg: http://www.yahoo.com) because the IPMsg protocol uses ':' as a delimeter. Now fixed.
+7. Introduced a new flag in Options that lets a user turn off Peer Messenger protocol support. Not recommended! Only do this if you have trouble communicating with other Peer Messenger clients.
+8. Cleaned up configuration functionality. New class called ConfigurationManager introduced.
+
+1.0.8.0
+=======
+1. View log implemented because Panky spanky's in love with the damn feature.
+2. Partial rewrite of the way the Peer Messenger protocol functions. This is ongoing so for the moment "DisablePeerMessengerSupport" ships as True by default. This means PeerMessenger always uses the IP protocol from now on.
+
+1.0.9.0
+=======
+1. File transfer implementation. On the IP protocol only at the moment.
+2. Ability to right-click and copy/paste in the conversation window.
+3. Can now send sealed messages and get status info on whether they were opened. Doesn't work the other way round at the moment. Not sure we even need it.
+4. Set focus to search box on popup from systray. Select entered text in search box when it is focussed.
+5. IP users aren't pointed out with (IP) next to their name any longer. Didn't see the point anymore.

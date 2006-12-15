@@ -41,3 +41,9 @@
 3. Can now send sealed messages and get status info on whether they were opened. Doesn't work the other way round at the moment. Not sure we even need it.
 4. Set focus to search box on popup from systray. Select entered text in search box when it is focussed.
 5. IP users aren't pointed out with (IP) next to their name any longer. Didn't see the point anymore.
+
+1.1.0.0
+=======
+1. Came up with a way of nesting PeerMessage messages in IPMessenger messages.
+2. PeerMessenger now supports "xyz is typing a message" style status messages now.
+3. Profile pictures!!!

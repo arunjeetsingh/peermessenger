@@ -1,16 +1,18 @@
 using System;
+using System.Windows.Forms;
 
 namespace PeerMessenger
 {
 	/// <summary>
 	/// Summary description for Host.
 	/// </summary>
-	public class Host
+	public class Host : ListViewItem
 	{
 		private string _PreferredName;
 		private string _Sender;
 		private string _HostName;
 		private bool _IP;
+		private SendFileInfo _ProfilePicture;
 
 		public Host(string sender, string preferredName, string hostName) : this(sender, preferredName, hostName, false)
 		{			
@@ -22,6 +24,9 @@ namespace PeerMessenger
 			_HostName = hostName;
 			_IP = ip;
 			_Sender = sender;
+
+			Text = PreferredName;
+			ImageIndex = 0;
 		}
 
 		public string Sender
@@ -72,6 +77,18 @@ namespace PeerMessenger
 			}
 		}
 
+		public SendFileInfo ProfilePicture
+		{
+			get
+			{
+				return _ProfilePicture;
+			}
+			set
+			{
+				_ProfilePicture = value;
+			}
+		}
+
 		public override string ToString()
 		{
 			string retVal = PreferredName.Replace("\0", " ");
@@ -93,6 +110,5 @@ namespace PeerMessenger
 		{
 			return Sender.GetHashCode();
 		}
-
 	}
 }

@@ -14,6 +14,7 @@ namespace PeerMessenger
 		private static string _LogFile;
 		private static bool _DisablePeerMessengerSupport;
 		private static bool _Seal;
+		private static string _ProfilePicture;
 
 		static ConfigurationManager()
 		{
@@ -30,6 +31,8 @@ namespace PeerMessenger
 			{
 				_Seal = bool.Parse(seal);
 			}
+
+			_ProfilePicture = _GetConfigValue("ProfilePicture");			
 
 			XmlDocument doc = new XmlDocument();
 			doc.Load(_ConfigFile);
@@ -92,6 +95,11 @@ namespace PeerMessenger
 			_SetConfigValue("UserName", userName);
 		}
 
+		public static void SetProfilePicture(string profilePicture)
+		{
+			_SetConfigValue("ProfilePicture", profilePicture);
+		}
+
 		public static void SetDisablePeerMessengerSupport(bool val)
 		{
 			_SetConfigValue("DisablePeerMessengerSupport", val.ToString());
@@ -131,6 +139,14 @@ namespace PeerMessenger
 			get
 			{
 				return _Seal;
+			}
+		}
+
+		public static string ProfilePicture
+		{
+			get
+			{
+				return _ProfilePicture;
 			}
 		}
 	}

@@ -64,38 +64,57 @@ namespace PeerMessenger
 
 					logger.Debug("Broadcast from " + callerEndpoint.Address.ToString());
 
-					string message = Encoding.ASCII.GetString(request);
-					StringReader sr = new StringReader(message);
-					XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
-					PeerMessage msg = xs.Deserialize(sr) as PeerMessage;
-							
-					if((msg.Command & Command.Presence) == Command.Presence)
-					{
-						Host newClient = new Host(msg.Sender, msg.Message, msg.SenderHost);
-						Subscriber.GetClient(newClient);
-						ConfirmPresence(newClient);
-					}
-					else if((msg.Command & Command.AcknowledgePresence) == Command.AcknowledgePresence)
-					{
-						Subscriber.GetClient(new Host(msg.Sender, msg.Message, msg.SenderHost));
-					}							
-					else if((msg.Command & Command.Absence) == Command.Absence)
-					{
-						Subscriber.DeleteClient(msg.Sender);
-					}
-					else if((msg.Command & Command.AcknowledgeMessage) == Command.AcknowledgeMessage)
-					{
-						//Message acknowledged
-					}
-					else if((msg.Command & Command.Message) == Command.Message)
-					{
-						Subscriber.GetMessage(msg.Sender, msg.Message);
-					}
+					string message = Encoding.ASCII.GetString(request);							
+					_ProcessPeerMessage(message);
 				}
 			}
 			catch(Exception ex)
 			{
 				logger.Debug(ex.Message);
+			}
+		}
+
+		private void _ProcessPeerMessage(string message)
+		{
+			StringReader sr = new StringReader(message);
+			XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
+			PeerMessage msg = xs.Deserialize(sr) as PeerMessage;
+
+			if((msg.Command & Command.Presence) == Command.Presence)
+			{
+				Host newClient = new Host(msg.Sender, msg.Message, msg.SenderHost);
+				Subscriber.GetClient(newClient);
+				ConfirmPresence(newClient);
+			}
+			else if((msg.Command & Command.AcknowledgePresence) == Command.AcknowledgePresence)
+			{
+				Subscriber.GetClient(new Host(msg.Sender, msg.Message, msg.SenderHost));
+			}							
+			else if((msg.Command & Command.Absence) == Command.Absence)
+			{
+				Subscriber.DeleteClient(msg.Sender);
+			}
+			else if((msg.Command & Command.StatusMessage) == Command.StatusMessage)
+			{
+				Subscriber.GetStatusMessage(msg.Sender, msg.Message);
+			}
+			else if((msg.Command & Command.ProfilePicture) == Command.ProfilePicture)
+			{
+				Host h = Subscriber.IsClientKnown(msg.Sender);
+				if(h != null)
+				{
+					h.ProfilePicture = msg.FileInfo[0];
+				}
+
+				Subscriber.GetClient(h);
+			}
+			else if((msg.Command & Command.AcknowledgeMessage) == Command.AcknowledgeMessage)
+			{
+				//Message acknowledged
+			}
+			else if((msg.Command & Command.Message) == Command.Message)
+			{
+				Subscriber.GetMessage(msg.Sender, msg.Message);
 			}
 		}
 
@@ -208,6 +227,11 @@ namespace PeerMessenger
 								AcknowledgeMessage(m);
 							}
 						}
+						else if((m.Command & Command.IPMSG_PEERMESSAGE) == Command.IPMSG_PEERMESSAGE)
+						{
+							//Got a peer message over IP
+							_ProcessPeerMessage(m.AdditionalSection);
+						}
 					}
 					else
 					{
@@ -235,6 +259,15 @@ namespace PeerMessenger
 		{
 			byte[] bMsg = MessageFormatter.FormatIpMessage(ivSelf, ivSelf.PreferredName, Command.IPMSG_ANSENTRY);
 			listenerIp.Send(bMsg, bMsg.Length, m.SenderHost, _IPPort);
+
+			//Wait 2 seconds before sending profile info
+			System.Threading.Thread.Sleep(2000);
+
+			if(ConfigurationManager.ProfilePicture != null)
+			{
+				bMsg = _GetIPProfilePictureMessage(ConfigurationManager.ProfilePicture);
+				listenerIp.Send(bMsg, bMsg.Length, m.SenderHost, _IPPort);
+			}
 		}
 
 		private bool _IsDuplicateMessage(IpMessage m)
@@ -277,6 +310,17 @@ namespace PeerMessenger
 			listener.Send(broadcast, broadcast.Length, host, ivPort);
 		}
 
+		public void SendPeerMessageOverIP(string host, PeerMessage msg)
+		{
+			XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
+			StringWriter sr = new StringWriter();
+			xs.Serialize(sr, msg);
+			string pm = sr.GetStringBuilder().ToString();
+
+			byte[] msgBuf = MessageFormatter.FormatIpMessage(ivSelf, pm, Command.IPMSG_PEERMESSAGE);
+			listenerIp.Send(msgBuf, msgBuf.Length, host, _IPPort);
+		}
+
 		public void SendIP(string host, string message)
 		{
 			SendIP(host, message, false);
@@ -308,6 +352,34 @@ namespace PeerMessenger
 			listenerIp.Send(msg, msg.Length, new IPEndPoint(IPAddress.Parse(_BroadcastIP), _IPPort));
 			msg = MessageFormatter.GetIPMsgPresenceMessage(ivSelf);
 			listenerIp.Send(msg, msg.Length, new IPEndPoint(IPAddress.Parse(_BroadcastIP), _IPPort));
+		}
+
+		public void BroadcastIPProfilePicture(string filePath)
+		{			
+			byte[] msgBuf = _GetIPProfilePictureMessage(filePath);
+			listenerIp.Send(msgBuf, msgBuf.Length, new IPEndPoint(IPAddress.Parse(_BroadcastIP), _IPPort));
+		}
+
+		private byte[] _GetIPProfilePictureMessage(string filePath)
+		{
+			SendFileInfo[] fi = null;
+			if(filePath != null)
+			{
+				fi = new SendFileInfo[1];
+				fi[0] = new SendFileInfo(filePath);
+			}
+
+			PeerMessage msg = new PeerMessage(ivSelf);
+			msg.Command = Command.ProfilePicture;
+			msg.FileInfo = fi;
+
+			XmlSerializer xs = new XmlSerializer(typeof(PeerMessage));
+			StringWriter sr = new StringWriter();
+			xs.Serialize(sr, msg);
+			string pm = sr.GetStringBuilder().ToString();
+
+			byte[] msgBuf = MessageFormatter.FormatIpMessage(ivSelf, pm, Command.IPMSG_PEERMESSAGE);
+			return msgBuf;
 		}
 
 		public void BroadcastPresence()

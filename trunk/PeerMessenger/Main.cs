@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Xml;
 using System.Diagnostics;
 using log4net;
+using System.IO;
 
 namespace PeerMessenger
 {
@@ -20,7 +21,6 @@ namespace PeerMessenger
 	/// </summary>
 	public class MainForm : System.Windows.Forms.Form, ISubscriber
 	{
-		private System.Windows.Forms.ListBox lstHosts;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Button btnExit;		
 		private System.Windows.Forms.Button btnChat;
@@ -45,6 +45,12 @@ namespace PeerMessenger
 		private System.Windows.Forms.Button btnRefresh;
 		private System.Windows.Forms.StatusBar sbMain;
 		private System.Windows.Forms.MenuItem mnuViewLog;
+		private System.Windows.Forms.ListView lvHosts;
+		private System.Windows.Forms.ImageList ilHosts;
+		private System.Windows.Forms.ColumnHeader clmText;
+		private System.Windows.Forms.PictureBox pbProfile;
+		private System.Windows.Forms.Label lblPreferredName;
+		private System.Windows.Forms.Timer tmrProfile;
 
 		private ILog logger = LogManager.GetLogger(typeof(MainForm));		
 
@@ -84,7 +90,6 @@ namespace PeerMessenger
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(MainForm));
-			this.lstHosts = new System.Windows.Forms.ListBox();
 			this.btnExit = new System.Windows.Forms.Button();
 			this.btnChat = new System.Windows.Forms.Button();
 			this.cmnuMain = new System.Windows.Forms.ContextMenu();
@@ -99,26 +104,18 @@ namespace PeerMessenger
 			this.tmrSearch = new System.Windows.Forms.Timer(this.components);
 			this.btnRefresh = new System.Windows.Forms.Button();
 			this.sbMain = new System.Windows.Forms.StatusBar();
+			this.lvHosts = new System.Windows.Forms.ListView();
+			this.clmText = new System.Windows.Forms.ColumnHeader();
+			this.ilHosts = new System.Windows.Forms.ImageList(this.components);
+			this.pbProfile = new System.Windows.Forms.PictureBox();
+			this.lblPreferredName = new System.Windows.Forms.Label();
+			this.tmrProfile = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
-			// 
-			// lstHosts
-			// 
-			this.lstHosts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right)));
-			this.lstHosts.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lstHosts.Location = new System.Drawing.Point(8, 32);
-			this.lstHosts.Name = "lstHosts";
-			this.lstHosts.Size = new System.Drawing.Size(216, 301);
-			this.lstHosts.Sorted = true;
-			this.lstHosts.TabIndex = 0;
-			this.lstHosts.DoubleClick += new System.EventHandler(this.lstHosts_DoubleClick);
-			this.lstHosts.SelectedIndexChanged += new System.EventHandler(this.lstHosts_SelectedIndexChanged);
 			// 
 			// btnExit
 			// 
 			this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnExit.BackColor = System.Drawing.SystemColors.Control;
+			this.btnExit.BackColor = System.Drawing.Color.Beige;
 			this.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btnExit.Location = new System.Drawing.Point(168, 344);
@@ -131,7 +128,7 @@ namespace PeerMessenger
 			// btnChat
 			// 
 			this.btnChat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnChat.BackColor = System.Drawing.SystemColors.Control;
+			this.btnChat.BackColor = System.Drawing.Color.Beige;
 			this.btnChat.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnChat.Enabled = false;
 			this.btnChat.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
@@ -184,8 +181,9 @@ namespace PeerMessenger
 			this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtSearch.BackColor = System.Drawing.Color.Beige;
 			this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.txtSearch.Location = new System.Drawing.Point(8, 8);
+			this.txtSearch.Location = new System.Drawing.Point(8, 64);
 			this.txtSearch.Name = "txtSearch";
 			this.txtSearch.Size = new System.Drawing.Size(200, 20);
 			this.txtSearch.TabIndex = 6;
@@ -196,11 +194,11 @@ namespace PeerMessenger
 			// btnSearch
 			// 
 			this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSearch.BackColor = System.Drawing.Color.White;
+			this.btnSearch.BackColor = System.Drawing.Color.Ivory;
 			this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnSearch.ImageIndex = 0;
 			this.btnSearch.ImageList = this.ilIcons;
-			this.btnSearch.Location = new System.Drawing.Point(204, 8);
+			this.btnSearch.Location = new System.Drawing.Point(204, 64);
 			this.btnSearch.Name = "btnSearch";
 			this.btnSearch.Size = new System.Drawing.Size(20, 20);
 			this.btnSearch.TabIndex = 7;
@@ -220,7 +218,7 @@ namespace PeerMessenger
 			// btnRefresh
 			// 
 			this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnRefresh.BackColor = System.Drawing.SystemColors.Control;
+			this.btnRefresh.BackColor = System.Drawing.Color.Beige;
 			this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btnRefresh.Location = new System.Drawing.Point(40, 344);
 			this.btnRefresh.Name = "btnRefresh";
@@ -236,19 +234,80 @@ namespace PeerMessenger
 			this.sbMain.Size = new System.Drawing.Size(232, 16);
 			this.sbMain.TabIndex = 9;
 			// 
+			// lvHosts
+			// 
+			this.lvHosts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+				| System.Windows.Forms.AnchorStyles.Left) 
+				| System.Windows.Forms.AnchorStyles.Right)));
+			this.lvHosts.BackColor = System.Drawing.Color.Beige;
+			this.lvHosts.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lvHosts.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+																					  this.clmText});
+			this.lvHosts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.lvHosts.Location = new System.Drawing.Point(8, 88);
+			this.lvHosts.MultiSelect = false;
+			this.lvHosts.Name = "lvHosts";
+			this.lvHosts.Size = new System.Drawing.Size(216, 248);
+			this.lvHosts.SmallImageList = this.ilHosts;
+			this.lvHosts.Sorting = System.Windows.Forms.SortOrder.Ascending;
+			this.lvHosts.TabIndex = 10;
+			this.lvHosts.View = System.Windows.Forms.View.Details;
+			this.lvHosts.DoubleClick += new System.EventHandler(this.lvHosts_DoubleClick);
+			this.lvHosts.SelectedIndexChanged += new System.EventHandler(this.lvHosts_SelectedIndexChanged);
+			// 
+			// clmText
+			// 
+			this.clmText.Text = "";
+			this.clmText.Width = 210;
+			// 
+			// ilHosts
+			// 
+			this.ilHosts.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.ilHosts.ImageSize = new System.Drawing.Size(30, 30);
+			this.ilHosts.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilHosts.ImageStream")));
+			this.ilHosts.TransparentColor = System.Drawing.Color.Transparent;
+			// 
+			// pbProfile
+			// 
+			this.pbProfile.Image = ((System.Drawing.Image)(resources.GetObject("pbProfile.Image")));
+			this.pbProfile.Location = new System.Drawing.Point(8, 8);
+			this.pbProfile.Name = "pbProfile";
+			this.pbProfile.Size = new System.Drawing.Size(50, 50);
+			this.pbProfile.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pbProfile.TabIndex = 11;
+			this.pbProfile.TabStop = false;
+			// 
+			// lblPreferredName
+			// 
+			this.lblPreferredName.AutoSize = true;
+			this.lblPreferredName.BackColor = System.Drawing.Color.Transparent;
+			this.lblPreferredName.Font = new System.Drawing.Font("Times New Roman", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.lblPreferredName.Location = new System.Drawing.Point(64, 16);
+			this.lblPreferredName.Name = "lblPreferredName";
+			this.lblPreferredName.Size = new System.Drawing.Size(153, 28);
+			this.lblPreferredName.TabIndex = 12;
+			this.lblPreferredName.Text = "Peer Messenger";
+			// 
+			// tmrProfile
+			// 
+			this.tmrProfile.Interval = 5000;
+			this.tmrProfile.Tick += new System.EventHandler(this.tmrProfile_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.BackColor = System.Drawing.Color.White;
+			this.BackColor = System.Drawing.Color.LightYellow;
 			this.ClientSize = new System.Drawing.Size(232, 397);
 			this.ContextMenu = this.cmnuMain;
+			this.Controls.Add(this.lblPreferredName);
+			this.Controls.Add(this.pbProfile);
+			this.Controls.Add(this.lvHosts);
 			this.Controls.Add(this.sbMain);
 			this.Controls.Add(this.btnRefresh);
 			this.Controls.Add(this.btnSearch);
 			this.Controls.Add(this.txtSearch);
 			this.Controls.Add(this.btnChat);
 			this.Controls.Add(this.btnExit);
-			this.Controls.Add(this.lstHosts);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
@@ -318,10 +377,10 @@ namespace PeerMessenger
 					items.AddRange(hosts.Values);
 				}
 
-				lstHosts.BeginUpdate();
-				lstHosts.Items.Clear();
-				lstHosts.Items.AddRange(items.ToArray());
-				lstHosts.EndUpdate();
+				lvHosts.BeginUpdate();
+				lvHosts.Items.Clear();
+				lvHosts.Items.AddRange((Host[])items.ToArray(typeof(Host)));
+				lvHosts.EndUpdate();
 			}
 			catch(Exception ex)
 			{
@@ -355,14 +414,25 @@ namespace PeerMessenger
 					userName = ConfigurationManager.UserName;
 				}
 				this.Text += " - " + userName;
+				lblPreferredName.Text = userName;
 
 				//Set up host settings for self			
 				self = new Host(Environment.UserName, userName, Environment.MachineName);
+				if(ConfigurationManager.ProfilePicture != null)
+				{
+					pbProfile.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
+				}
 
 				_StartListening();
 
 				//Broadcast client presence over IPMsg
 				udpManager.BroadcastIPPresence();
+
+				//Send out info about profile picture
+				if(ConfigurationManager.ProfilePicture != null)
+				{
+					udpManager.BroadcastIPProfilePicture(ConfigurationManager.ProfilePicture);
+				}
 
 				//Add yourself to the host list
 				hosts.Add(self.Sender, self);
@@ -390,18 +460,6 @@ namespace PeerMessenger
 			}
 		}	
 	
-		private void lstHosts_DoubleClick(object sender, System.EventArgs e)
-		{
-			try
-			{
-				_StartConversation();
-			}
-			catch(Exception ex)
-			{
-				logger.Error(ex.Message, ex);
-			}
-		}
-
 		private void MainForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			try
@@ -411,25 +469,6 @@ namespace PeerMessenger
 				niPeerMessenger.Visible = true;
 				this.ShowInTaskbar = false;
 				this.Hide();
-			}
-			catch(Exception ex)
-			{
-				logger.Error(ex.Message, ex);
-			}
-		}
-
-		private void lstHosts_SelectedIndexChanged(object sender, System.EventArgs e)
-		{
-			try
-			{
-				if(lstHosts.SelectedIndices.Count > 0)
-				{
-					btnChat.Enabled = true;
-				}
-				else
-				{
-					btnChat.Enabled = false;
-				}
 			}
 			catch(Exception ex)
 			{
@@ -459,12 +498,18 @@ namespace PeerMessenger
 				o.LogFile = logFile;
 				o.DisablePeerMessengerSupport = ConfigurationManager.DisablePeerMessengerSupport;
 				o.Seal = ConfigurationManager.Seal;
+				o.ProfilePicture = ConfigurationManager.ProfilePicture;
 
 				if(o.ShowDialog() == DialogResult.OK)
 				{
 					if(o.UserName != self.PreferredName)
 					{
 						ConfigurationManager.SetUserName(o.UserName);
+					}
+
+					if(o.ProfilePicture != ConfigurationManager.ProfilePicture)
+					{
+						ConfigurationManager.SetProfilePicture(o.ProfilePicture);
 					}
 
 					if(o.LogFile != logFile)
@@ -645,7 +690,8 @@ namespace PeerMessenger
 				{
 					Conversation c = null;
 					Host host = hosts[sender] as Host;
-					if(!Conversations.Contains(sender))
+					//Set up a new conversation if its not a status message
+					if(Conversations.Contains(sender) == false && status == false)
 					{
 						c = new Conversation(this, host, self, udpManager);
 						Conversations.Add(host.Sender, c);					
@@ -654,13 +700,16 @@ namespace PeerMessenger
 				
 					c = Conversations[host.Sender] as Conversation;
 
-					if(status)
+					if(c != null)
 					{
-						c.GetStatusMessage(sender, message);
-					}
-					else
-					{
-						c.GetMessage(sender, message);
+						if(status)
+						{
+							c.GetStatusMessage(sender, message);
+						}
+						else
+						{
+							c.GetMessage(sender, message);
+						}
 					}
 				}
 			}
@@ -681,13 +730,15 @@ namespace PeerMessenger
 						if(!hosts.Contains(h.Sender))
 						{						
 							hosts.Add(h.Sender, h);
-							lstHosts.Items.Add(h);
+							lvHosts.Items.Add(h);
 						}
 						else
 						{
+							Host toRemove = hosts[h.Sender] as Host;
 							hosts[h.Sender] = h;
-							lstHosts.Items.Remove(h);
-							lstHosts.Items.Add(h);
+							int idx = lvHosts.Items.IndexOf(h);
+							lvHosts.Items.Remove(toRemove);
+							lvHosts.Items.Add(h);
 						}
 
 						if(Conversations.Contains(h.Sender))
@@ -720,7 +771,7 @@ namespace PeerMessenger
 						if(hosts.Contains(sender))
 						{
 							Host toRemove = hosts[sender] as Host;
-							lstHosts.Items.Remove(toRemove);
+							lvHosts.Items.Remove(toRemove);
 							hosts.Remove(sender);
 
 							if(Conversations.Contains(sender))
@@ -764,10 +815,10 @@ namespace PeerMessenger
 		/// </summary>
 		private void _StartConversation()
 		{
-			if(lstHosts.SelectedIndices.Count > 0)
+			if(lvHosts.SelectedIndices.Count > 0)
 			{
 				Conversation c = null;
-				Host selectedHost = lstHosts.SelectedItem as Host;
+				Host selectedHost = lvHosts.SelectedItems[0] as Host;
 				if(!Conversations.Contains(selectedHost.Sender))
 				{
 					c = new Conversation(this, selectedHost, self, udpManager);
@@ -855,6 +906,10 @@ namespace PeerMessenger
 		private void _Refresh()
 		{
 			udpManager.BroadcastIPPresence();
+			if(ConfigurationManager.ProfilePicture != null)
+			{
+				udpManager.BroadcastIPProfilePicture(ConfigurationManager.ProfilePicture);
+			}
 			tmrBroadcast.Enabled = true;
 			tmrBroadcast.Start();
 		}
@@ -864,5 +919,95 @@ namespace PeerMessenger
 			sbMain.Text = hosts.Values.Count - 1 + " users online.";
 		}
 		#endregion															
+
+		private void lvHosts_DoubleClick(object sender, System.EventArgs e)
+		{
+			try
+			{
+				_StartConversation();
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void lvHosts_SelectedIndexChanged(object sender, System.EventArgs e)
+		{
+			try
+			{
+				if(lvHosts.SelectedIndices.Count > 0)
+				{
+					btnChat.Enabled = true;
+					Host h = lvHosts.SelectedItems[0] as Host;
+					if(h != null && h.ProfilePicture != null)
+					{
+						string path = h.Sender + "\\" + h.ProfilePicture.Name;
+						if(File.Exists(path))
+						{
+							ilHosts.Images.Add(Image.FromFile(path));
+							h.ImageIndex = ilHosts.Images.Count - 1;
+						}
+						else
+						{
+							tmrProfile.Stop();
+							tmrProfile.Start();
+						}
+					}
+				}
+				else
+				{
+					btnChat.Enabled = false;
+				}
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void ftDialog_DownloadComplete(object sender, EventArgs e)
+		{
+			FileTransferDialog ft = sender as FileTransferDialog;
+			string path = ft.Peer.Sender + "\\" + ft.FileInfo.Name;
+			_SetProfileImage(ft.Peer, path);
+			ft.Dispose();
+		}
+
+		private void _SetProfileImage(Host h, string path)
+		{
+			ilHosts.Images.Add(Image.FromFile(path));
+			Host toUpdate = hosts[h.Sender] as Host;
+			int idx = lvHosts.Items.IndexOf(toUpdate);
+			if(idx > -1)
+			{
+				toUpdate = lvHosts.Items[idx] as Host;			
+				toUpdate.ImageIndex = ilHosts.Images.Count - 1;
+			}
+		}
+
+		private void tmrProfile_Tick(object sender, System.EventArgs e)
+		{
+			if(lvHosts.SelectedIndices.Count > 0)
+			{
+				Host h = lvHosts.SelectedItems[0] as Host;
+				string path = h.Sender + "\\" + h.ProfilePicture.Name;
+				if(h != null && h.ProfilePicture != null)
+				{
+					if(!Directory.Exists(h.Sender))
+					{
+						Directory.CreateDirectory(h.Sender);
+					}
+
+					SendFileInfo fi = h.ProfilePicture;
+					fi.FullName = path;
+					FileTransferDialog ftDialog = new FileTransferDialog(self, h, 0, fi);
+					ftDialog.DownloadComplete += new EventHandler(ftDialog_DownloadComplete);
+					ftDialog.GetFile();
+				}
+			}
+
+			tmrProfile.Stop();
+		}
 	}
 }

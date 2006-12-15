@@ -45,8 +45,13 @@ namespace PeerMessenger
 				{
 					logger.Debug("Got file request: " + m.ToString().Replace('\0', ' '));
 					string[] parts = m.AdditionalSection.Split(':');
-					uint originalPacket = Convert.ToUInt32(parts[0], 16);
-					originalPacket--;
+					uint originalPacket = 0;
+					if(parts[0] != "0")
+					{
+						originalPacket = Convert.ToUInt32(parts[0], 16);
+						originalPacket--;
+					}
+
 					int fileId = int.Parse(parts[1]);
 					int offset = int.Parse(parts[2]);
 
@@ -54,11 +59,7 @@ namespace PeerMessenger
 					{
 						Hashtable files = (Hashtable)FileSendQueue[originalPacket];
 						SendFileInfo file = files[fileId] as SendFileInfo;
-						FileStream fs = File.OpenRead(file.FullName);
-						byte[] contents = new byte[fs.Length];
-						fs.Read(contents, offset, (int)fs.Length);
-						fs.Close();
-						stream.Write(contents, 0, contents.Length);
+						_SendFile(file.FullName, offset, stream);
 
 						files.Remove(fileId);
 						if(files.Values.Count == 0)
@@ -66,11 +67,25 @@ namespace PeerMessenger
 							FileSendQueue.Remove(originalPacket);	
 						}
 					}
+					else if(originalPacket == 0 && fileId == 0)
+					{
+						//Send profile picture
+						_SendFile(ConfigurationManager.ProfilePicture, 0, stream);
+					}
 				}
 
 				stream.Close();
 				client.Close();
 			}
+		}
+
+		private void _SendFile(string fullName, int offset, NetworkStream stream)
+		{
+			FileStream fs = File.OpenRead(fullName);
+			byte[] contents = new byte[fs.Length];
+			fs.Read(contents, offset, (int)fs.Length);
+			fs.Close();
+			stream.Write(contents, 0, contents.Length);
 		}
 
 		public void Listen()

@@ -45,6 +45,9 @@ namespace PeerMessenger
 		private System.Windows.Forms.Button btnPop;
 		private System.Windows.Forms.ContextMenu cmPop;
 		private System.Windows.Forms.MenuItem mnuSendSealed;
+		private System.Windows.Forms.StatusBar sbStatus;
+		private System.Windows.Forms.PictureBox pbPeer;
+		private System.Windows.Forms.PictureBox pbSelf;
 		private System.Windows.Forms.MenuItem mnuSend;
 
 		public Conversation(ISubscriber mainWindow, Host host, Host self, UdpManager udpManager) : this()
@@ -100,20 +103,25 @@ namespace PeerMessenger
 			this.cmPop = new System.Windows.Forms.ContextMenu();
 			this.mnuSendSealed = new System.Windows.Forms.MenuItem();
 			this.mnuSend = new System.Windows.Forms.MenuItem();
+			this.sbStatus = new System.Windows.Forms.StatusBar();
+			this.pbPeer = new System.Windows.Forms.PictureBox();
+			this.pbSelf = new System.Windows.Forms.PictureBox();
 			this.SuspendLayout();
 			// 
 			// rtbSend
 			// 
 			this.rtbSend.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
+			this.rtbSend.BackColor = System.Drawing.Color.Beige;
 			this.rtbSend.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.rtbSend.ContextMenu = this.cmSend;
 			this.rtbSend.Location = new System.Drawing.Point(8, 216);
 			this.rtbSend.Name = "rtbSend";
 			this.rtbSend.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.rtbSend.Size = new System.Drawing.Size(320, 48);
+			this.rtbSend.Size = new System.Drawing.Size(320, 56);
 			this.rtbSend.TabIndex = 1;
 			this.rtbSend.Text = "";
+			this.rtbSend.TextChanged += new System.EventHandler(this.rtbSend_TextChanged);
 			this.rtbSend.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbSend_LinkClicked);
 			this.rtbSend.KeyUp += new System.Windows.Forms.KeyEventHandler(this.rtbSend_KeyUp);
 			// 
@@ -163,12 +171,12 @@ namespace PeerMessenger
 			// btnSend
 			// 
 			this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSend.BackColor = System.Drawing.SystemColors.Control;
+			this.btnSend.BackColor = System.Drawing.Color.Beige;
 			this.btnSend.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btnSend.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.btnSend.Location = new System.Drawing.Point(328, 216);
 			this.btnSend.Name = "btnSend";
-			this.btnSend.Size = new System.Drawing.Size(48, 48);
+			this.btnSend.Size = new System.Drawing.Size(64, 56);
 			this.btnSend.TabIndex = 2;
 			this.btnSend.Text = "Send";
 			this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
@@ -180,13 +188,14 @@ namespace PeerMessenger
 				| System.Windows.Forms.AnchorStyles.Right)));
 			this.rtbConversation.AutoSize = true;
 			this.rtbConversation.AutoWordSelection = true;
+			this.rtbConversation.BackColor = System.Drawing.Color.Beige;
 			this.rtbConversation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.rtbConversation.ContextMenu = this.cmConversation;
 			this.rtbConversation.Location = new System.Drawing.Point(8, 8);
 			this.rtbConversation.MaxLength = 50;
 			this.rtbConversation.Name = "rtbConversation";
 			this.rtbConversation.ReadOnly = true;
-			this.rtbConversation.Size = new System.Drawing.Size(384, 200);
+			this.rtbConversation.Size = new System.Drawing.Size(320, 200);
 			this.rtbConversation.TabIndex = 0;
 			this.rtbConversation.Text = "";
 			this.rtbConversation.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbConversation_LinkClicked);
@@ -220,13 +229,13 @@ namespace PeerMessenger
 			// btnPop
 			// 
 			this.btnPop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnPop.BackColor = System.Drawing.SystemColors.Control;
+			this.btnPop.BackColor = System.Drawing.Color.Beige;
 			this.btnPop.ContextMenu = this.cmPop;
 			this.btnPop.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btnPop.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.btnPop.Location = new System.Drawing.Point(376, 216);
+			this.btnPop.Location = new System.Drawing.Point(392, 216);
 			this.btnPop.Name = "btnPop";
-			this.btnPop.Size = new System.Drawing.Size(16, 48);
+			this.btnPop.Size = new System.Drawing.Size(16, 56);
 			this.btnPop.TabIndex = 3;
 			this.btnPop.Text = "▼";
 			this.btnPop.Click += new System.EventHandler(this.btnPop_Click);
@@ -251,13 +260,43 @@ namespace PeerMessenger
 			this.mnuSend.Text = "Send Unsealed";
 			this.mnuSend.Click += new System.EventHandler(this.mnuSend_Click);
 			// 
+			// sbStatus
+			// 
+			this.sbStatus.Location = new System.Drawing.Point(0, 277);
+			this.sbStatus.Name = "sbStatus";
+			this.sbStatus.Size = new System.Drawing.Size(416, 16);
+			this.sbStatus.TabIndex = 4;
+			// 
+			// pbPeer
+			// 
+			this.pbPeer.Image = ((System.Drawing.Image)(resources.GetObject("pbPeer.Image")));
+			this.pbPeer.Location = new System.Drawing.Point(336, 8);
+			this.pbPeer.Name = "pbPeer";
+			this.pbPeer.Size = new System.Drawing.Size(75, 75);
+			this.pbPeer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pbPeer.TabIndex = 5;
+			this.pbPeer.TabStop = false;
+			// 
+			// pbSelf
+			// 
+			this.pbSelf.Image = ((System.Drawing.Image)(resources.GetObject("pbSelf.Image")));
+			this.pbSelf.Location = new System.Drawing.Point(336, 136);
+			this.pbSelf.Name = "pbSelf";
+			this.pbSelf.Size = new System.Drawing.Size(75, 75);
+			this.pbSelf.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pbSelf.TabIndex = 6;
+			this.pbSelf.TabStop = false;
+			// 
 			// Conversation
 			// 
 			this.AcceptButton = this.btnSend;
 			this.AllowDrop = true;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.BackColor = System.Drawing.Color.White;
-			this.ClientSize = new System.Drawing.Size(400, 269);
+			this.BackColor = System.Drawing.Color.LightYellow;
+			this.ClientSize = new System.Drawing.Size(416, 293);
+			this.Controls.Add(this.pbSelf);
+			this.Controls.Add(this.pbPeer);
+			this.Controls.Add(this.sbStatus);
 			this.Controls.Add(this.btnPop);
 			this.Controls.Add(this.btnSend);
 			this.Controls.Add(this.rtbSend);
@@ -353,7 +392,6 @@ namespace PeerMessenger
 			string displayMessage = ivSelf.PreferredName + ": " + m;
 			messageLogger.Info("To   " + h.PreferredName + ": " + m);
 			showMessage(displayMessage);
-			
 		}
 
 		public void showMessage(string message)
@@ -394,7 +432,7 @@ namespace PeerMessenger
 							if(sfReceive.ShowDialog() == DialogResult.OK)
 							{
 								file.FullName = sfReceive.FileName;
-								FileTransferDialog transferDialog = new FileTransferDialog(this, ivSelf, h, packet, file);
+								FileTransferDialog transferDialog = new FileTransferDialog(ivSelf, h, packet, file);
 								if(transferDialog.ShowDialog(this) == DialogResult.OK)
 								{
 									showMessage("\n*** " + file.Name + " received.");
@@ -416,31 +454,31 @@ namespace PeerMessenger
 			{
 				if(h.Sender == sender)
 				{
-					if(rtbConversation.Text.Length > 0)
-					{
-						rtbConversation.AppendText("\n");
-					}
-
-					string displayMessage = null;
 					if(status)
 					{
-						displayMessage = message;
-						messageLogger.Info(displayMessage);						
+						sbStatus.Text = message;
+						messageLogger.Info(message);						
 					}
 					else
 					{
-						displayMessage = h.PreferredName + ": " + message;
-						messageLogger.Info("From " + displayMessage);						
-					}
+						if(rtbConversation.Text.Length > 0)
+						{
+							rtbConversation.AppendText("\n");
+						}
 
-					rtbConversation.AppendText(displayMessage);
+						string displayMessage = h.PreferredName + ": " + message;
+						messageLogger.Info("From " + displayMessage);	
+					
+						rtbConversation.AppendText(displayMessage);
+						sbStatus.Text = string.Empty;
 
-					rtbConversation.Focus();
-					rtbConversation.Select(rtbConversation.TextLength, 0);
-					rtbConversation.ScrollToCaret();
-					rtbSend.Focus();
+						rtbConversation.Focus();
+						rtbConversation.Select(rtbConversation.TextLength, 0);
+						rtbConversation.ScrollToCaret();
+						rtbSend.Focus();
 
-					FlashWindowHelper.FlashWindowEx(this.Handle);
+						FlashWindowHelper.FlashWindowEx(this.Handle);
+					}				
 				}
 			}
 			catch(Exception ex)
@@ -457,6 +495,8 @@ namespace PeerMessenger
 				{
 					h = host;
 					btnSend.Enabled = true;
+					mnuSend.Enabled = true;
+					mnuSendSealed.Enabled = true;
 					if(rtbConversation.Text.Length > 0)
 					{
 						rtbConversation.AppendText("\n");
@@ -484,6 +524,8 @@ namespace PeerMessenger
 				if(sender == h.Sender)
 				{
 					btnSend.Enabled = false;
+					mnuSend.Enabled = false;
+					mnuSendSealed.Enabled = false;
 					if(rtbConversation.Text.Length > 0)
 					{
 						rtbConversation.AppendText("\n");
@@ -516,6 +558,33 @@ namespace PeerMessenger
 			try
 			{
 				Text = h.PreferredName;
+				if(ConfigurationManager.ProfilePicture != null)
+				{
+					pbSelf.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
+				}
+
+				if(h != null && h.ProfilePicture != null)
+				{
+					string path = h.Sender + "\\" + h.ProfilePicture.Name;
+					if(File.Exists(path))
+					{
+						pbPeer.Image = Image.FromFile(path);
+					}
+					else
+					{
+						if(!Directory.Exists(h.Sender))
+						{
+							Directory.CreateDirectory(h.Sender);
+						}
+
+						SendFileInfo fi = h.ProfilePicture;
+						fi.FullName = path;
+						FileTransferDialog ftDialog = new FileTransferDialog(ivSelf, h, 0, fi);
+						ftDialog.DownloadComplete += new EventHandler(ftDialog_DownloadComplete);
+						ftDialog.GetFile();
+					}
+				}
+
 				rtbSend.Focus();
 			}
 			catch(Exception ex)
@@ -728,6 +797,39 @@ namespace PeerMessenger
 		private void cmPop_Popup(object sender, System.EventArgs e)
 		{
 			mnuSendSealed.Enabled = IpSession;
+		}
+
+		private void rtbSend_TextChanged(object sender, System.EventArgs e)
+		{
+			//Only send if there's a user on the other end
+			if(btnSend.Enabled)
+			{
+				if(rtbSend.Text.Length == 1)
+				{
+					_SendStatusMessage(ivSelf.PreferredName + " is typing a message");
+				}
+				else if(rtbSend.Text.Length == 0)
+				{
+					_SendStatusMessage(string.Empty);
+				}
+			}
+		}
+
+		private void _SendStatusMessage(string message)
+		{
+			PeerMessage pm = new PeerMessage(ivSelf);
+			pm.Command = Command.StatusMessage;
+			pm.Message = message;
+
+			ivUdpManager.SendPeerMessageOverIP(h.HostName, pm);
+		}
+
+		private void ftDialog_DownloadComplete(object sender, EventArgs e)
+		{
+			FileTransferDialog ft = sender as FileTransferDialog;
+			string path = ft.Peer.Sender + "\\" + ft.FileInfo.Name;
+			pbPeer.Image = Image.FromFile(path);
+			ft.Dispose();
 		}
 	}
 }

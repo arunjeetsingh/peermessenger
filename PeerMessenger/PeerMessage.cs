@@ -1,4 +1,6 @@
 using System;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace PeerMessenger
 {
@@ -67,6 +69,34 @@ namespace PeerMessenger
 			set
 			{
 				_Message = value;
+			}
+		}
+
+		public SendFileInfo[] FileInfo
+		{
+			get
+			{
+				if((Command & PeerMessenger.Command.ProfilePicture) == PeerMessenger.Command.ProfilePicture && Message != null)
+				{
+					StringReader sr = new StringReader(Message);
+					XmlSerializer xs = new XmlSerializer(typeof(SendFileInfo[]));
+					SendFileInfo[] fi = (SendFileInfo[])xs.Deserialize(sr);
+					return fi;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			set
+			{
+				if(value != null)
+				{
+					StringWriter sw = new StringWriter();
+					XmlSerializer xs = new XmlSerializer(typeof(SendFileInfo[]));
+					xs.Serialize(sw, value);
+					Message = sw.ToString();
+				}
 			}
 		}
 	}

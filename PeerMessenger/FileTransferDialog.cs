@@ -18,7 +18,6 @@ namespace PeerMessenger
 	/// </summary>
 	public class FileTransferDialog : System.Windows.Forms.Form
 	{
-		private Conversation _Conversation;
 		private SendFileInfo _FileInfo;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.PictureBox pictureBox2;
@@ -33,16 +32,17 @@ namespace PeerMessenger
 		byte[] buf;
 		Host _Self, _Peer;
 		uint _Packet;
+		private bool _Silent;
 		private System.Windows.Forms.ProgressBar pbDownload;
 		ArrayList contents;
 		private System.Windows.Forms.Label lblDownloaded;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.CheckBox chkAutoClose;
+		public event EventHandler DownloadComplete;
 		TcpClient client;
 
-		public FileTransferDialog(Conversation conversation, Host self, Host peer, uint packet, SendFileInfo fileInfo) : this()
+		public FileTransferDialog(Host self, Host peer, uint packet, SendFileInfo fileInfo) : this()
 		{
-			_Conversation = conversation;
 			_Self = self;
 			_Peer = peer;
 			_Packet = packet;
@@ -62,26 +62,43 @@ namespace PeerMessenger
 				contents.AddRange(temp);
 				int percentDone = (int)((double)contents.Count/(double)_FileInfo.Size * 100);
 				logger.Debug(percentDone + "% done");
-				pbDownload.Value = percentDone;
-				pbDownload.Update();
-				lblDownloaded.Text = _GetDisplaySize(contents.Count);
+
+				if(_Silent == false)
+				{
+					pbDownload.Value = percentDone;
+					pbDownload.Update();
+					lblDownloaded.Text = _GetDisplaySize(contents.Count);
+				}
 
 				if(stream.DataAvailable == false)
 				{					
 					logger.Debug("Got " + file.Name);
 					byte[] bfile = (byte[])contents.ToArray(typeof(byte));
-					FileStream fs = new FileStream(file.FullName, FileMode.Create, FileAccess.Write, FileShare.None);
-					fs.Write(bfile, 0, bfile.Length);
-					fs.Close();
+					//Lets make sure another thread didn't already get the picture
+					if(File.Exists(file.FullName) == false)
+					{
+						FileStream fs = new FileStream(file.FullName, FileMode.Create, FileAccess.Write, FileShare.None);
+						fs.Write(bfile, 0, bfile.Length);
+						fs.Close();
+					}
+
 					client.Close();
 
-					btnOpen.Enabled = true;
-					btnOpenFolder.Enabled = true;
-					btnCancel.Enabled = false;
+					if(_Silent == false)
+					{
+						btnOpen.Enabled = true;
+						btnOpenFolder.Enabled = true;
+						btnCancel.Enabled = false;
+					}
 
-					if(chkAutoClose.Checked)
+					if(_Silent == false && chkAutoClose.Checked)
 					{
 						_AutoExit();
+					}
+
+					if(DownloadComplete != null)
+					{
+						DownloadComplete(this, new EventArgs());
 					}
 				}
 				else
@@ -304,11 +321,24 @@ namespace PeerMessenger
 		#endregion		
 
 		private void FileTransferDialog_Load(object sender, System.EventArgs e)
-		{			
-			lblInfo.Text = _FileInfo.Name + " from " + _Peer.PreferredName;
+		{
+			_Silent = false;
+			GetFile();
+		}
+
+		public void GetFile()
+		{
+			if(_Silent == false)
+			{
+				lblInfo.Text = _FileInfo.Name + " from " + _Peer.PreferredName;
+			}
+
 			string folder = Path.GetDirectoryName(_FileInfo.FullName);
 
-			lblDownloadFolder.Text = folder;
+			if(_Silent == false)
+			{
+				lblDownloadFolder.Text = folder;
+			}
 
 			client = new TcpClient();
 			client.NoDelay = true;
@@ -360,6 +390,22 @@ namespace PeerMessenger
 		{
 			DialogResult = DialogResult.OK;
 			this.Dispose();
+		}
+
+		public Host Peer
+		{
+			get
+			{
+				return _Peer;
+			}
+		}
+
+		public SendFileInfo FileInfo
+		{
+			get
+			{
+				return _FileInfo;
+			}
 		}
 	}
 }

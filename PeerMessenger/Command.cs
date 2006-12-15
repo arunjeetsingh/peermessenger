@@ -16,6 +16,8 @@ namespace PeerMessenger
 		public const ulong AcknowledgePresence = 0x00000010;
 		public const ulong AcknowledgeMessage  = 0x00000020;
 		public const ulong RequestMessageAck   = 0x00000040;
+		public const ulong StatusMessage	   = 0x00000080;
+		public const ulong ProfilePicture	   = 0x00000100;
 		#endregion
 
 		#region IPMsg Commands
@@ -33,6 +35,7 @@ namespace PeerMessenger
 		public const ulong IPMSG_RELEASEFILES  = 0x00000061;
 		public const ulong IPMSG_GETFILEDATA   = 0x00000060;
 		public const ulong IPMSG_SECRETOPT     = 0x00000200;
+		public const ulong IPMSG_PEERMESSAGE   = 0x20000000;
 		#endregion
 	}
 }

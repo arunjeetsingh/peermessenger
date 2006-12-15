@@ -31,7 +31,12 @@ namespace PeerMessenger
 		private ILog logger = LogManager.GetLogger(typeof(OptionsDialog));
 		private System.Windows.Forms.CheckBox chkSeal;
 		private bool _DisablePeerMessengerSupport;
+		private System.Windows.Forms.Button btnBrowseProfile;
+		private System.Windows.Forms.Label llbProfile;
 		private bool _Seal;
+		private System.Windows.Forms.TextBox txtProfilePicture;
+		private System.Windows.Forms.OpenFileDialog ofProfile;
+		private string _ProfilePicture;
 
 		public OptionsDialog()
 		{
@@ -77,6 +82,10 @@ namespace PeerMessenger
 			this.sfLog = new System.Windows.Forms.SaveFileDialog();
 			this.chkPeer = new System.Windows.Forms.CheckBox();
 			this.chkSeal = new System.Windows.Forms.CheckBox();
+			this.txtProfilePicture = new System.Windows.Forms.TextBox();
+			this.btnBrowseProfile = new System.Windows.Forms.Button();
+			this.llbProfile = new System.Windows.Forms.Label();
+			this.ofProfile = new System.Windows.Forms.OpenFileDialog();
 			this.SuspendLayout();
 			// 
 			// txtUserName
@@ -97,7 +106,7 @@ namespace PeerMessenger
 			// 
 			// btnOk
 			// 
-			this.btnOk.Location = new System.Drawing.Point(224, 168);
+			this.btnOk.Location = new System.Drawing.Point(224, 208);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(64, 24);
 			this.btnOk.TabIndex = 3;
@@ -107,7 +116,7 @@ namespace PeerMessenger
 			// btnCancel
 			// 
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(296, 168);
+			this.btnCancel.Location = new System.Drawing.Point(296, 208);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(64, 24);
 			this.btnCancel.TabIndex = 4;
@@ -149,7 +158,7 @@ namespace PeerMessenger
 			// chkPeer
 			// 
 			this.chkPeer.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
-			this.chkPeer.Location = new System.Drawing.Point(8, 80);
+			this.chkPeer.Location = new System.Drawing.Point(8, 128);
 			this.chkPeer.Name = "chkPeer";
 			this.chkPeer.Size = new System.Drawing.Size(360, 40);
 			this.chkPeer.TabIndex = 7;
@@ -159,24 +168,57 @@ namespace PeerMessenger
 			// chkSeal
 			// 
 			this.chkSeal.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
-			this.chkSeal.Location = new System.Drawing.Point(8, 128);
+			this.chkSeal.Location = new System.Drawing.Point(8, 176);
 			this.chkSeal.Name = "chkSeal";
 			this.chkSeal.Size = new System.Drawing.Size(348, 24);
 			this.chkSeal.TabIndex = 8;
 			this.chkSeal.Text = "Messages should be sealed by default";
 			this.chkSeal.TextAlign = System.Drawing.ContentAlignment.TopLeft;
 			// 
+			// txtProfilePicture
+			// 
+			this.txtProfilePicture.Location = new System.Drawing.Point(95, 80);
+			this.txtProfilePicture.Name = "txtProfilePicture";
+			this.txtProfilePicture.Size = new System.Drawing.Size(184, 20);
+			this.txtProfilePicture.TabIndex = 9;
+			this.txtProfilePicture.Text = "";
+			// 
+			// btnBrowseProfile
+			// 
+			this.btnBrowseProfile.Location = new System.Drawing.Point(287, 80);
+			this.btnBrowseProfile.Name = "btnBrowseProfile";
+			this.btnBrowseProfile.TabIndex = 10;
+			this.btnBrowseProfile.Text = "&Browse...";
+			this.btnBrowseProfile.Click += new System.EventHandler(this.btnBrowseProfile_Click);
+			// 
+			// llbProfile
+			// 
+			this.llbProfile.Location = new System.Drawing.Point(7, 80);
+			this.llbProfile.Name = "llbProfile";
+			this.llbProfile.Size = new System.Drawing.Size(80, 16);
+			this.llbProfile.TabIndex = 11;
+			this.llbProfile.Text = "Profile Picture";
+			// 
+			// ofProfile
+			// 
+			this.ofProfile.Filter = "All files|*.*";
+			this.ofProfile.RestoreDirectory = true;
+			this.ofProfile.Title = "Peer Messenger - Select profile picture";
+			// 
 			// OptionsDialog
 			// 
 			this.AcceptButton = this.btnOk;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(368, 199);
+			this.ClientSize = new System.Drawing.Size(368, 239);
 			this.ControlBox = false;
-			this.Controls.Add(this.chkSeal);
-			this.Controls.Add(this.chkPeer);
+			this.Controls.Add(this.txtProfilePicture);
 			this.Controls.Add(this.txtLogFile);
 			this.Controls.Add(this.txtUserName);
+			this.Controls.Add(this.btnBrowseProfile);
+			this.Controls.Add(this.llbProfile);
+			this.Controls.Add(this.chkSeal);
+			this.Controls.Add(this.chkPeer);
 			this.Controls.Add(this.btnBrowse);
 			this.Controls.Add(this.lblLogFile);
 			this.Controls.Add(this.btnCancel);
@@ -200,6 +242,7 @@ namespace PeerMessenger
 				LogFile = txtLogFile.Text;
 				DisablePeerMessengerSupport = chkPeer.Checked;
 				Seal = chkSeal.Checked;
+				ProfilePicture = txtProfilePicture.Text;
 				DialogResult= DialogResult.OK;
 				this.Dispose();
 			}
@@ -221,6 +264,11 @@ namespace PeerMessenger
 				if(LogFile != null)
 				{
 					txtLogFile.Text = LogFile;
+				}
+
+				if(ProfilePicture != null)
+				{
+					txtProfilePicture.Text = ProfilePicture;
 				}
 
 				chkPeer.Checked = DisablePeerMessengerSupport;
@@ -252,6 +300,21 @@ namespace PeerMessenger
 				if(sfLog.ShowDialog() == DialogResult.OK)
 				{
 					txtLogFile.Text = sfLog.FileName;
+				}
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+		}
+
+		private void btnBrowseProfile_Click(object sender, System.EventArgs e)
+		{
+			try
+			{
+				if(ofProfile.ShowDialog() == DialogResult.OK)
+				{
+					txtProfilePicture.Text = ofProfile.FileName;
 				}
 			}
 			catch(Exception ex)
@@ -305,6 +368,18 @@ namespace PeerMessenger
 			set
 			{
 				_Seal = value;
+			}
+		}
+
+		public string ProfilePicture
+		{
+			get
+			{
+				return _ProfilePicture;
+			}
+			set
+			{
+				_ProfilePicture = value;
 			}
 		}
 	}

@@ -21,18 +21,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_2CCB4AD7032646ACB5160CAD499CE239"
-        "OwnerKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2CCB4AD7032646ACB5160CAD499CE239"
-        "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -40,6 +28,18 @@
         "Entry"
         {
         "MsmKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
+        "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E09D87196A9048B5AD7AFF437AC9C4DB"
+        "OwnerKey" = "8:_87776D42BA807DBB9D9E41C7FE8A0ADB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E09D87196A9048B5AD7AFF437AC9C4DB"
         "OwnerKey" = "8:_6900489A6F6840AD96C15E00AA31B8F5"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -214,13 +214,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Peer Messenger"
-        "ProductCode" = "8:{8DB9BE2A-7409-4BAA-902D-3A20706BC3E4}"
-        "PackageCode" = "8:{B8227D13-BDAB-4245-8F3A-4E96F6B43289}"
+        "ProductCode" = "8:{37D9B4F0-9C4E-486A-AD18-D0455F81933B}"
+        "PackageCode" = "8:{A032AD42-C33C-4966-9E81-B05266216EC2}"
         "UpgradeCode" = "8:{A1C12FFF-C7EF-4875-B13B-B0601B544733}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.0.9"
+        "ProductVersion" = "8:1.1.0"
         "Manufacturer" = "8:Maximum Impact"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://arunjeetsingh.livejournal.com"
@@ -740,7 +740,7 @@
         }
         "MergeModule"
         {
-            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_2CCB4AD7032646ACB5160CAD499CE239"
+            "{35A69C6E-5BA4-440D-803D-762B59A45393}:_E09D87196A9048B5AD7AFF437AC9C4DB"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -759,7 +759,7 @@
         {
             "{8062640A-2EEE-46E9-AB67-688E9A886E9F}:_6900489A6F6840AD96C15E00AA31B8F5"
             {
-            "SourcePath" = "8:..\\PeerMessenger\\obj\\Debug\\PeerMessenger.exe"
+            "SourcePath" = "8:..\\PeerMessenger\\obj\\Release\\PeerMessenger.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_0635DC41B3DC4364B30A4809323D6196"
@@ -785,6 +785,9 @@
                 {
                 }
             }
+        }
+        "VJSharpPlugin"
+        {
         }
     }
 }

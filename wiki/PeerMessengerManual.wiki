@@ -9,9 +9,9 @@ whole thing as a series of How-tos.
 
 = Details =
 
-*What can PeerMessenger do?*
+ **What can PeerMessenger do?*
 
-*Installing PeerMessenger*
+ **Installing PeerMessenger*
 
 *Setting up a preferred name for yourself*
 

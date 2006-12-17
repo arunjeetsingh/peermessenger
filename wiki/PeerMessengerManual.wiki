@@ -1,0 +1,22 @@
+#summary The PeerMessenger Manual
+
+= Introduction =
+
+This manual briefly covers the features available in the latest version of PeerMessenger.
+Version numbers where a feature first appeared are noted alongside the feature itself.
+Because I believe its easiest to learn UIs using scenarios I have tried to structure the
+whole thing as a series of How-tos.
+
+= Details =
+
+*What can PeerMessenger do?*
+*Installing PeerMessenger*
+*Setting up a preferred name for yourself*
+*Setting up a profile picture*
+*Setting up and using the chat log file*
+*Sending a message*
+*Receiving a message*
+*Sending "Sealed" messages to IPMsg users*
+*FAQ*
+*Known issues*
+

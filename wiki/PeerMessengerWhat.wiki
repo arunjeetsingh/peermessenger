@@ -1,4 +1,5 @@
 #summary What Can Peer Messenger Do?
+#labels Phase-Deploy
 
  * Send messages to to other Peer Messenger and IP Messenger users
  * Receive messages from other Peer Messenger and IP Messenger users

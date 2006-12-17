@@ -1,4 +1,5 @@
 #summary The Peer Messenger Manual
+#labels Phase-Deploy
 
 = Introduction =
 

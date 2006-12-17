@@ -9,7 +9,7 @@ whole thing as a series of How-tos.
 
 = Details =
 
- * *[wiki:PeerMessengerWhat What can Peer Messenger do?]*
+ * *[:PeerMessengerWhat:What can Peer Messenger do?]*
 
  * *Installing Peer Messenger*
 

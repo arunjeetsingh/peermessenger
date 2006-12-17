@@ -17,4 +17,4 @@ application.
  * Multicast messages. Can only send messages to one user at a time
  * Encryption. All messages are sent/received in plain text
 
-PeerMessengerManual
+[PeerMessengerManual Back] to manual main page

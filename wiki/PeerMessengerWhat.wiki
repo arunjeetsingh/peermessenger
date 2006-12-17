@@ -1,0 +1,8 @@
+#summary What Can Peer Messenger Do?
+
+ *Send messages to to other Peer Messenger and IP Messenger users
+ *Receive messages from other Peer Messenger and IP Messenger users
+ *Log all messages sent/received to a log file
+ *Provide an alternative to IP Messenger that looks like a modern Instant Messaging
+application.
+ *Exchange profile pictures with other Peer Messenger users

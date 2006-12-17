@@ -1,3 +1,5 @@
+PeerMessengerManual
+
 #summary What Can Peer Messenger Do?
 
  *Send messages to to other Peer Messenger and IP Messenger users
@@ -14,3 +16,5 @@ application.
 *What it can't do (yet)*
  *Multicast messages. Can only send messages to one user at a time
  *Encryption. All messages are sent/received in plain text
+
+PeerMessengerManual

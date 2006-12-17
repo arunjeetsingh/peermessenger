@@ -7,11 +7,9 @@ Version numbers where a feature first appeared are noted alongside the feature i
 Because I believe its easiest to learn UIs using scenarios I have tried to structure the
 whole thing as a series of How-tos.
 
-["PeerMessengerWhat"]
-
 = Details =
 
- * *[:PeerMessengerWhat:What can Peer Messenger do?]*
+ * *["What can Peer Messenger do?"]*
 
  * *Installing Peer Messenger*
 

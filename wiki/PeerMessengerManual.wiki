@@ -1,17 +1,17 @@
-#summary The PeerMessenger Manual
+#summary The Peer Messenger Manual
 
 = Introduction =
 
-This manual briefly covers the features available in the latest version of PeerMessenger.
+This manual briefly covers the features available in the latest version of Peer Messenger.
 Version numbers where a feature first appeared are noted alongside the feature itself.
 Because I believe its easiest to learn UIs using scenarios I have tried to structure the
 whole thing as a series of How-tos.
 
 = Details =
 
- * *What can PeerMessenger do?*
+ * *What can Peer Messenger do?*
 
- * *Installing PeerMessenger*
+ * *Installing Peer Messenger*
 
  * *Setting up a preferred name for yourself*
 

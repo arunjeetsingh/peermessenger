@@ -1,5 +1,3 @@
-PeerMessengerManual
-
 #summary What Can Peer Messenger Do?
 
  *Send messages to to other Peer Messenger and IP Messenger users

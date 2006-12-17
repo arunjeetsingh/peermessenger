@@ -10,7 +10,7 @@ whole thing as a series of How-tos.
 
 = Details =
 
- * *PeerMessengerWhat - What can Peer Messenger do?*
+ * [PeerMessengerWhat What can Peer Messenger do?]
 
  * *Installing Peer Messenger*
 
@@ -30,5 +30,5 @@ whole thing as a series of How-tos.
 
  * *Known issues*
 
- * *Latest [http://peermessenger.googlecode.com/svn/trunk/PeerMessenger/changelog.txt
-change log]*
+ * Latest [http://peermessenger.googlecode.com/svn/trunk/PeerMessenger/changelog.txt
+change log]

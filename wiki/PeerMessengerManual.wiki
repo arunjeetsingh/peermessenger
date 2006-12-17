@@ -29,3 +29,6 @@ whole thing as a series of How-tos.
  * *FAQ*
 
  * *Known issues*
+
+ * *Latest change log*
+[http://peermessenger.googlecode.com/svn/trunk/PeerMessenger/changelog.txt].

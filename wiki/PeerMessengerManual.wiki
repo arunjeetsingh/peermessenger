@@ -9,7 +9,7 @@ whole thing as a series of How-tos.
 
 = Details =
 
- * *["What can Peer Messenger do?"]*
+ * *What can Peer Messenger do? - PeerMessengerWhat*
 
  * *Installing Peer Messenger*
 

@@ -31,4 +31,4 @@ whole thing as a series of How-tos.
  * *Known issues*
 
  * *Latest change log*
-[http://peermessenger.googlecode.com/svn/trunk/PeerMessenger/changelog.txt].
+[http://peermessenger.googlecode.com/svn/trunk/PeerMessenger/changelog.txt change log].

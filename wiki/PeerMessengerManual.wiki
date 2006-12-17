@@ -13,18 +13,18 @@ whole thing as a series of How-tos.
 
  **Installing PeerMessenger*
 
-*Setting up a preferred name for yourself*
+ **Setting up a preferred name for yourself*
 
-*Setting up a profile picture*
+ **Setting up a profile picture*
 
-*Setting up and using the chat log file*
+ **Setting up and using the chat log file*
 
-*Sending a message*
+ **Sending a message*
 
-*Receiving a message*
+ **Receiving a message*
 
-*Sending "Sealed" messages to IPMsg users*
+ **Sending "Sealed" messages to IPMsg users*
 
-*FAQ*
+ **FAQ*
 
-*Known issues*
+ **Known issues*

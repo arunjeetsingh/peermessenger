@@ -940,7 +940,7 @@ namespace PeerMessenger
 				{
 					btnChat.Enabled = true;
 					Host h = lvHosts.SelectedItems[0] as Host;
-					if(h != null && h.ProfilePicture != null)
+					if(h != null && h.ImageIndex == 0 && h.ProfilePicture != null)
 					{
 						string path = h.Sender + "\\" + h.ProfilePicture.Name;
 						if(File.Exists(path))

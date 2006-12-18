@@ -558,7 +558,7 @@ namespace PeerMessenger
 			try
 			{
 				Text = h.PreferredName;
-				if(ConfigurationManager.ProfilePicture != null)
+				if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 				{
 					pbSelf.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
 				}

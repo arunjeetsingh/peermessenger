@@ -263,7 +263,7 @@ namespace PeerMessenger
 			//Wait 2 seconds before sending profile info
 			System.Threading.Thread.Sleep(2000);
 
-			if(ConfigurationManager.ProfilePicture != null)
+			if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 			{
 				bMsg = _GetIPProfilePictureMessage(ConfigurationManager.ProfilePicture);
 				listenerIp.Send(bMsg, bMsg.Length, m.SenderHost, _IPPort);

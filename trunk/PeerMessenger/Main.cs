@@ -418,7 +418,7 @@ namespace PeerMessenger
 
 				//Set up host settings for self			
 				self = new Host(Environment.UserName, userName, Environment.MachineName);
-				if(ConfigurationManager.ProfilePicture != null)
+				if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 				{
 					pbProfile.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
 				}
@@ -429,7 +429,7 @@ namespace PeerMessenger
 				udpManager.BroadcastIPPresence();
 
 				//Send out info about profile picture
-				if(ConfigurationManager.ProfilePicture != null)
+				if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 				{
 					udpManager.BroadcastIPProfilePicture(ConfigurationManager.ProfilePicture);
 				}
@@ -906,7 +906,7 @@ namespace PeerMessenger
 		private void _Refresh()
 		{
 			udpManager.BroadcastIPPresence();
-			if(ConfigurationManager.ProfilePicture != null)
+			if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 			{
 				udpManager.BroadcastIPProfilePicture(ConfigurationManager.ProfilePicture);
 			}

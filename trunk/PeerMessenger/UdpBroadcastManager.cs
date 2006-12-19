@@ -27,12 +27,26 @@ namespace PeerMessenger
 		private const string _PeerIP = "226.254.82.220";
 		private const string _BroadcastIP = "255.255.255.255";
 		private const int _IPPort = 2425;
+		private Hashtable ivProfilePictureCache;
 
 		public ISubscriber Subscriber
 		{
 			get
 			{
 				return ivSub;
+			}
+		}
+
+		protected Hashtable ProfilePictureCache
+		{
+			get
+			{
+				if(ivProfilePictureCache == null)
+				{
+					ivProfilePictureCache = new Hashtable();
+				}
+
+				return ivProfilePictureCache;
 			}
 		}
 
@@ -83,12 +97,25 @@ namespace PeerMessenger
 			if((msg.Command & Command.Presence) == Command.Presence)
 			{
 				Host newClient = new Host(msg.Sender, msg.Message, msg.SenderHost);
+				if(ProfilePictureCache.Contains(msg.Sender))
+				{
+					newClient.ProfilePicture = ProfilePictureCache[msg.Sender] as SendFileInfo;
+					ProfilePictureCache.Remove(msg.Sender);
+				}
+
 				Subscriber.GetClient(newClient);
 				ConfirmPresence(newClient);
 			}
 			else if((msg.Command & Command.AcknowledgePresence) == Command.AcknowledgePresence)
 			{
-				Subscriber.GetClient(new Host(msg.Sender, msg.Message, msg.SenderHost));
+				Host newClient = new Host(msg.Sender, msg.Message, msg.SenderHost);				
+				if(ProfilePictureCache.Contains(msg.Sender))
+				{
+					newClient.ProfilePicture = ProfilePictureCache[msg.Sender] as SendFileInfo;
+					ProfilePictureCache.Remove(msg.Sender);
+				}
+
+				Subscriber.GetClient(newClient);
 			}							
 			else if((msg.Command & Command.Absence) == Command.Absence)
 			{
@@ -104,9 +131,13 @@ namespace PeerMessenger
 				if(h != null)
 				{
 					h.ProfilePicture = msg.FileInfo[0];
+					Subscriber.GetClient(h);
 				}
-
-				Subscriber.GetClient(h);
+				else
+				{
+					//Cache the profile picture for later use
+					ProfilePictureCache[msg.Sender] = msg.FileInfo[0];
+				}
 			}
 			else if((msg.Command & Command.AcknowledgeMessage) == Command.AcknowledgeMessage)
 			{
@@ -164,13 +195,30 @@ namespace PeerMessenger
 						}
 						else if((m.Command & Command.IPMSG_ANSENTRY) == Command.IPMSG_ANSENTRY)
 						{
+							Host newClient = new Host(m.Sender, m.AdditionalSection, m.SenderHost, true);
+
+							//Load up the profile pic info if we have it cached
+							if(ProfilePictureCache.Contains(m.Sender))
+							{
+								newClient.ProfilePicture = ProfilePictureCache[m.Sender] as SendFileInfo;
+								ProfilePictureCache.Remove(m.Sender);
+							}
+
 							//Presence broadcast answered. Add this peer to your list
-							Subscriber.GetClient(new Host(m.Sender, m.AdditionalSection, m.SenderHost, true));
+							Subscriber.GetClient(newClient);							
 						}
 						else if((m.Command & Command.IPMSG_BR_ENTRY) == Command.IPMSG_BR_ENTRY && (m.Command & Command.IPMSG_FILEATTACHOPT) == Command.IPMSG_FILEATTACHOPT)
 						{
+							Host newClient = new Host(m.Sender, m.AdditionalSection, m.SenderHost, true);
+							//Load up the profile pic info if we have it cached
+							if(ProfilePictureCache.Contains(m.Sender))
+							{
+								newClient.ProfilePicture = ProfilePictureCache[m.Sender] as SendFileInfo;
+								ProfilePictureCache.Remove(m.Sender);
+							}
+
 							//Presence broadcast from peer
-							Subscriber.GetClient(new Host(m.Sender, m.AdditionalSection, m.SenderHost, true));
+							Subscriber.GetClient(newClient);							
 							AnswerEntry(m);
 						}
 						else if((m.Command & Command.IPMSG_BR_EXIT) == Command.IPMSG_BR_EXIT && (m.Command & Command.IPMSG_FILEATTACHOPT) == Command.IPMSG_FILEATTACHOPT)
@@ -259,9 +307,6 @@ namespace PeerMessenger
 		{
 			byte[] bMsg = MessageFormatter.FormatIpMessage(ivSelf, ivSelf.PreferredName, Command.IPMSG_ANSENTRY);
 			listenerIp.Send(bMsg, bMsg.Length, m.SenderHost, _IPPort);
-
-			//Wait 2 seconds before sending profile info
-			System.Threading.Thread.Sleep(2000);
 
 			if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 			{

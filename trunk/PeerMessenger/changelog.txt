@@ -47,3 +47,9 @@
 1. Came up with a way of nesting PeerMessage messages in IPMessenger messages.
 2. PeerMessenger now supports "xyz is typing a message" style status messages now.
 3. Profile pictures!!!
+
+1.1.1.0
+=======
+1. The profile image loading code needs more exception handling. Specifically we don't want the application dying when the user deletes a profile picture or tries loading a non-existant one.
+2. Picture boxes in the conversation window don't move correctly when the window is resized.
+3. Profile picture loading was a bit buggy. The profile picture wouldn't load at times because of packet timing issues. Now fixed.

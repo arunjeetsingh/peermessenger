@@ -269,6 +269,7 @@ namespace PeerMessenger
 			// 
 			// pbPeer
 			// 
+			this.pbPeer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.pbPeer.Image = ((System.Drawing.Image)(resources.GetObject("pbPeer.Image")));
 			this.pbPeer.Location = new System.Drawing.Point(336, 8);
 			this.pbPeer.Name = "pbPeer";
@@ -279,6 +280,7 @@ namespace PeerMessenger
 			// 
 			// pbSelf
 			// 
+			this.pbSelf.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.pbSelf.Image = ((System.Drawing.Image)(resources.GetObject("pbSelf.Image")));
 			this.pbSelf.Location = new System.Drawing.Point(336, 136);
 			this.pbSelf.Name = "pbSelf";
@@ -560,7 +562,14 @@ namespace PeerMessenger
 				Text = h.PreferredName;
 				if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 				{
-					pbSelf.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
+					try
+					{
+						pbSelf.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
+					}
+					catch(Exception ex)
+					{
+						logger.Error(ex.Message, ex);
+					}
 				}
 
 				if(h != null && h.ProfilePicture != null)
@@ -568,7 +577,14 @@ namespace PeerMessenger
 					string path = h.Sender + "\\" + h.ProfilePicture.Name;
 					if(File.Exists(path))
 					{
-						pbPeer.Image = Image.FromFile(path);
+						try
+						{
+							pbPeer.Image = Image.FromFile(path);
+						}
+						catch(Exception ex)
+						{
+							logger.Error(ex.Message, ex);
+						}
 					}
 					else
 					{
@@ -828,7 +844,14 @@ namespace PeerMessenger
 		{
 			FileTransferDialog ft = sender as FileTransferDialog;
 			string path = ft.Peer.Sender + "\\" + ft.FileInfo.Name;
-			pbPeer.Image = Image.FromFile(path);
+			try
+			{
+				pbPeer.Image = Image.FromFile(path);
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
 			ft.Dispose();
 		}
 	}

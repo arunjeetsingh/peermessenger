@@ -420,7 +420,14 @@ namespace PeerMessenger
 				self = new Host(Environment.UserName, userName, Environment.MachineName);
 				if(ConfigurationManager.ProfilePicture != null && ConfigurationManager.ProfilePicture.Length > 0)
 				{
-					pbProfile.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
+					try
+					{
+						pbProfile.Image = Image.FromFile(ConfigurationManager.ProfilePicture);
+					}
+					catch(Exception ex)
+					{
+						logger.Error(ex.Message, ex);
+					}
 				}
 
 				_StartListening();
@@ -945,7 +952,15 @@ namespace PeerMessenger
 						string path = h.Sender + "\\" + h.ProfilePicture.Name;
 						if(File.Exists(path))
 						{
-							ilHosts.Images.Add(Image.FromFile(path));
+							try
+							{
+								ilHosts.Images.Add(Image.FromFile(path));
+							}
+							catch(Exception ex)
+							{
+								logger.Error(ex.Message, ex);
+							}
+
 							h.ImageIndex = ilHosts.Images.Count - 1;
 						}
 						else
@@ -976,7 +991,15 @@ namespace PeerMessenger
 
 		private void _SetProfileImage(Host h, string path)
 		{
-			ilHosts.Images.Add(Image.FromFile(path));
+			try
+			{
+				ilHosts.Images.Add(Image.FromFile(path));
+			}
+			catch(Exception ex)
+			{
+				logger.Error(ex.Message, ex);
+			}
+
 			Host toUpdate = hosts[h.Sender] as Host;
 			int idx = lvHosts.Items.IndexOf(toUpdate);
 			if(idx > -1)
@@ -990,10 +1013,10 @@ namespace PeerMessenger
 		{
 			if(lvHosts.SelectedIndices.Count > 0)
 			{
-				Host h = lvHosts.SelectedItems[0] as Host;
-				string path = h.Sender + "\\" + h.ProfilePicture.Name;
+				Host h = lvHosts.SelectedItems[0] as Host;				
 				if(h != null && h.ProfilePicture != null)
 				{
+					string path = h.Sender + "\\" + h.ProfilePicture.Name;
 					if(!Directory.Exists(h.Sender))
 					{
 						Directory.CreateDirectory(h.Sender);

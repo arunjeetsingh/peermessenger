@@ -35,6 +35,8 @@ namespace PeerMessenger
 		public const ulong IPMSG_RELEASEFILES  = 0x00000061;
 		public const ulong IPMSG_GETFILEDATA   = 0x00000060;
 		public const ulong IPMSG_SECRETOPT     = 0x00000200;
+		public const ulong IPMSG_BROADCASTOPT  = 0x00000400;
+		public const ulong IPMSG_MULTICASTOPT  = 0x00000800;
 		public const ulong IPMSG_PEERMESSAGE   = 0x20000000;
 		#endregion
 	}
